@@ -1,4 +1,4 @@
-class Action():
+class Action_model():
     def __init__(self,card_index,from_row,to_row):
         self.prev_action = self
         self.card_index = card_index

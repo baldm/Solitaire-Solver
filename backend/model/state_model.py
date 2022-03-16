@@ -1,4 +1,4 @@
-class State():
+class State_model():
     def __init__(self,board,foundations):
         self.board = board
         self.foundations = foundations
