@@ -39,4 +39,4 @@ async def upload_board_image(file: UploadFile = File(...)):
     # Removing temp file
     remove(save_path)
 
-    return {'board_state': endpoint_output}
+    return {'next_move': endpoint_output}

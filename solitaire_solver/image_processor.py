@@ -6,10 +6,9 @@ def process_and_analyze_image(image):
     # Image processing
     card_recognizer = CardRecognizer()
     results = card_recognizer.recognize_cards(image)
-    print(results)
 
     # analyzing board
     # main analyzing things go here
 
-    # Change results to analyzers output
-    return results
+    # Change to analyzers output, e.i the next move
+    return {'move_from': 2, 'move_card': 'temp card', 'move_to': 3}
