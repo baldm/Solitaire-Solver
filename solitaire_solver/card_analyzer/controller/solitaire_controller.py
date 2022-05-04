@@ -1,3 +1,4 @@
+from sympy import false
 from model.action_model import Action_model
 from model.state_model import State_model
 
@@ -6,10 +7,9 @@ class Solitaire_controller():
         values = range(1,13)
         keys = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
         self.order = dict(keys,values)
-
         pass
 
-    def action(self, state : State_model):
+    def Actions(self, state : State_model):
         ## returns list of actions which is possible in given state
         actions = []
         board = state.board
@@ -26,27 +26,68 @@ class Solitaire_controller():
         return actions
         
 
-    def result():
-        ## applies a given action to a given state and returns state
-        pass
+    def Result(self, state : State_model, action : Action_model):
 
-    def is_move_legal(actions : Action_model, state : State_model):
-        ## checks if an action is valid
-        pass
+        board = state.board
+        foundations = state.foundations
+        
+        if action.to_row < len(board):
+            board[action.to_row] += board[action.from_row][action.card_index-1 : None]
+        else:
+            foundations[action.to_row%len(board)] = board[action.from_row][action.card_index : None]
 
-    def descending_order(self,card : str, card_to : str):
+
+        board[action.from_row] = board[action.from_row][:action.card_index-1]
+        new_state = State_model(board,foundations,state.stock,state.talon,state.stock)
+        state.action = action
+        return new_state
+        
+
+    def is_move_legal(self, action : Action_model, state : State_model):
+        card = state.board[action.from_row][-1]
+        #if you move to foundations
+        if action.to_row > len(state.board):
+            to_row = state.foundations[action.to_row%len(state.board)]
+            if False in to_row:
+                if card[0] == 'A':
+                    return True
+                    ## todo add check if same type
+            elif self.descending_order(card,to_row[-1]) and card == state.board[action.to_row][-1]:
+                return True
+            return False
+
+
+        #Logic if moved to row on board
+        to_row = state.board[action.to_row]
+      
+        if False in to_row:
+            
+            if not self.king_to_empty(card,state.board[action.to_row]):
+                return False
+            return True
+        else:
+            card_to = to_row[-1]
+            if not self.descending_order(card,card_to):
+                return False
+
+            if not self.alternating_color(card,card_to):
+                return False
+
+        return True
+
+    def descending_order(self, card : str, card_to : str):
 
         if self.order.get(card_to[0]) - 1 == self.order.get(card[0]):
             return True
         return False
     
-    def king_to_empty(card : str, to_row : list):
+    def king_to_empty(self, card : str, to_row : list):
         if card[0] == 'K':
             if not to_row:
                 return True
         return False
 
-    def alternating_color(card : str, card_to : str):
+    def alternating_color(self, card : str, card_to : str):
         if (card[1] == 'S' or card[1] == 'C') and (card_to[1] == 'D' or card_to[1] == 'H') :
             return True
         elif (card[1] == 'D' or card[1] == 'H') and (card_to[1] == 'S' or card_to[1] == 'C'):
@@ -54,10 +95,18 @@ class Solitaire_controller():
         return False
         
        
-    
 
 
 
-    def is_terminal():
-        ## returns bool
-        pass
+    def is_terminal(self,state : State_model):
+        for row in state.board:
+            if row[-1] == '[]':
+                return True
+        return self.is_goal(state)
+       
+    def is_goal(self, state : State_model):
+        for row in state.board:
+            if not False in row:
+                return False
+        return True
+        
