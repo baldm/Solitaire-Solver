@@ -1,8 +1,11 @@
-import uuid
+import base64
+
 from os.path import join
 from os import getcwd, remove
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 from solitaire_solver import process_and_analyze_image
 
@@ -13,28 +16,38 @@ import time
 
 app = FastAPI()
 
+origins = ['*']
 
-@app.post("/analyze_image/")
-async def upload_board_image(file: UploadFile = File(...)):
-    # User @im_baby
-    # https://stackoverflow.com/questions/66162654/fastapi-image-post-and-resize
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    # Getting filename and reading file into memory
-    file.filename = f"{uuid.uuid4()}.jpg"
-    contents = await file.read()  # <-- Important!
 
-    # Saving the file to process
-    # Not sure we have to save the file,
-    # but we can always remove it later when it works.
-    save_path = join(getcwd(), 'images', file.filename)
-    with open(save_path, "wb+") as f:
-        f.write(contents)
+class Image(BaseModel):
+    image_string: str
+
+
+@app.post("/analyze_image")
+async def upload_board_image(item: Image):
+  
+    # Get path where image will be saved
+    save_path = join(getcwd(), 'images', 'filename.png')
+
+    # Decode image from base64
+    decoded_image = base64.b64decode(item.image_string)
+
+    # Save image to drive
+    with open(save_path, 'wb') as file:
+        file.write(decoded_image)
 
     # PROCESS IMAGE HERE:
     # sleep here to demonstrate processing image
     endpoint_output = process_and_analyze_image('temp')
-    time.sleep(5)
-    # END PROCESS IMAGE:
+    time.sleep(2)
 
     # Removing temp file
     remove(save_path)
