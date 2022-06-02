@@ -30,7 +30,7 @@ class Solitaire_controller():
 
         board = state.board
         foundations = state.foundations
-        
+
         if action.to_row < len(board):
             board[action.to_row] += board[action.from_row][action.card_index-1 : None]
         else:
@@ -41,7 +41,7 @@ class Solitaire_controller():
         new_state = State_model(board,foundations,state.stock,state.talon,state.stock)
         state.action = action
         return new_state
-        
+
 
     def is_move_legal(self, action : Action_model, state : State_model):
         card = state.board[action.from_row][-1]
@@ -59,9 +59,9 @@ class Solitaire_controller():
 
         #Logic if moved to row on board
         to_row = state.board[action.to_row]
-      
+
         if False in to_row:
-            
+
             if not self.king_to_empty(card,state.board[action.to_row]):
                 return False
             return True
@@ -93,8 +93,21 @@ class Solitaire_controller():
         elif (card[1] == 'D' or card[1] == 'H') and (card_to[1] == 'S' or card_to[1] == 'C'):
             return True
         return False
-        
-       
+
+    ## If there are less than 3 cards in talon and stock combined the game is locked and unsolvable
+    def draw_from_stack(stock : list, talon : list):
+        if(len(talon)+len(stock)<3):
+            return False
+        return True
+
+    ## Can't move a card to the talon from other piles
+    def from_and_to_pile_is_legal(card_from : str, card_to : str, talon : list):
+        if not card_from in talon:
+            if card_to in talon:
+                return False
+        return True
+
+
 
 
 
@@ -103,10 +116,9 @@ class Solitaire_controller():
             if row[-1] == '[]':
                 return True
         return self.is_goal(state)
-       
+
     def is_goal(self, state : State_model):
         for row in state.board:
             if not False in row:
                 return False
         return True
-        

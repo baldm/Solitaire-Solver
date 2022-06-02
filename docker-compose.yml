@@ -1,0 +1,12 @@
+# docker-compose.yml
+# COPIED FROM:
+# https://testdriven.io/blog/fastapi-docker-traefik/
+
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    command: uvicorn main:app --host 0.0.0.0
+    ports:
+      - 8000:8000
