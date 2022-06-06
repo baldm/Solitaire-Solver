@@ -20,13 +20,7 @@ class Solitaire_controller():
         ## actions regarding moving card from talon
         if not False in state.talon:
             card_index = len(state.talon) -1
-            card = state.talon[-1]
-            # If the card is not visible, get new picture
-            if card == '[]':
-                action = Action_model()
-                action.get_card = True
-                return action
-                
+            card = state.talon[-1]               
             for to_row in range(0,len(board) + len(foundations) + 1):
                 action = Action_model(card_index, -1, to_row)
                 if self.is_move_legal(action, state):
