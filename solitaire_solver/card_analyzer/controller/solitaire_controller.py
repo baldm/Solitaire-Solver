@@ -1,3 +1,5 @@
+from tkinter.tix import Tree
+from sympy import false, re
 from ..model.action_model import Action_model
 from ..model.state_model import State_model
 
@@ -13,25 +15,32 @@ class Solitaire_controller():
         actions = []
         board = state.board
         foundations = state.foundations
-
-        ## actions regarding talon
+        
+        
+        ## actions regarding moving card from talon
         if not False in state.talon:
-            for card,card_index in range (2,len(state.talon),3):
-                if card_index == len(state.talon)-1:
-                    for to_row in range(0,len(board) + len(foundations) + 1):
-                            action = Action_model(card_index, -1, to_row)
-                            if self.is_move_legal(action, state):
-                                actions.append(action)
-                elif (card_index+1)%3 == 0:
-                    action = Action_model()
-                    action.get_talon = True
-                    return action
+            card_index = len(state.talon) -1
+            card = state.talon[-1]
+            # If the card is not visible, get new picture
+            if card == '[]':
+                action = Action_model()
+                action.get_card = True
+                return action
+                
+            for to_row in range(0,len(board) + len(foundations) + 1):
+                action = Action_model(card_index, -1, to_row)
+                if self.is_move_legal(action, state):
+                    actions.append(action)
+
         
+        ## If it is possible to draw from stock
+        if self.draw_from_stock(state.stock,state.talon):
+            action = Action_model()
+            action.get_talon = True
+            actions.append(action)
 
 
-
-        
-        ##actions regarding hand
+        ## If talon is not empty
         if not False in state.talon:
             if len(state.talon) >= 3:
                 if state.talon[-3] == '[]':
@@ -40,14 +49,9 @@ class Solitaire_controller():
                     action.get_card = True
                     actions.append(action)
                 for to_row in range(0,len(board) + len(foundations) + 1):
-                        action = Action_model()
-                        action.get_talon = True
-                        actions.append(action)
-                
-
-                
-            
-
+                    action = Action_model()
+                    action.get_talon = True
+                    actions.append(action)
                 
 
         for row in range (0,len(board)+1):
@@ -155,25 +159,18 @@ class Solitaire_controller():
         return False
 
         ## If there are less than 3 cards in talon and stock combined the game is locked and unsolvable
-    def draw_from_stack(stock: list, talon: list):
+    def draw_from_stock(self,stock: list, talon: list):
             if (len(talon) + len(stock) < 3):
                 return False
             return True
-
-        ## Can't move a card to the talon from other piles
-    def from_and_to_pile_is_legal(card_from: str, card_to: str, talon: list):
-            if not card_from in talon:
-                if card_to in talon:
-                    return False
-            return True
-
-
 
     def is_terminal(self,state : State_model):
         for row in state.board:
             if row[-1] == '[]':
                 return True
-        return self.is_goal(state)
+        if state.talon[-1] == '[]':
+            return True
+        return False
        
     def is_goal(self, state : State_model):
         for row in state.board:
