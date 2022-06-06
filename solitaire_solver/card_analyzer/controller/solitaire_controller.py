@@ -176,5 +176,7 @@ class Solitaire_controller():
         for row in state.board:
             if not False in row:
                 return False
+        if not False in state.talon or not False in state.stock:
+            return False
         return True
         
