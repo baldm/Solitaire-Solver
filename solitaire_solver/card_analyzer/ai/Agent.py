@@ -13,7 +13,7 @@ class Agent():
         prev_state : State_model = state.prev_state
         actions = []
         while prev_state != state:
-            action :Action_model = state.action
+            action : Action_model = state.action
             actions.append([action.from_row, action.from_row, action.card_index])
         actions.reverse()
         return actions

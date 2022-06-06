@@ -10,8 +10,8 @@ class State_model():
         self.stock = stock
         self.talon = talon
 
-    def equals(self,state):
-        if self.board == state.board and self.foundations == state.foundations:
+    def equals(self,state : 'State_model'):
+        if self.board == state.board and self.foundations == state.foundations and self.talon == state.talon:
             return True
         return False
 
