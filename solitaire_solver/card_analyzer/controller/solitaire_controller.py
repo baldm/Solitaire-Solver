@@ -155,13 +155,13 @@ class Solitaire_controller():
         return False
 
         ## If there are less than 3 cards in talon and stock combined the game is locked and unsolvable
-        def draw_from_stack(stock: list, talon: list):
+    def draw_from_stack(stock: list, talon: list):
             if (len(talon) + len(stock) < 3):
                 return False
             return True
 
         ## Can't move a card to the talon from other piles
-        def from_and_to_pile_is_legal(card_from: str, card_to: str, talon: list):
+    def from_and_to_pile_is_legal(card_from: str, card_to: str, talon: list):
             if not card_from in talon:
                 if card_to in talon:
                     return False
