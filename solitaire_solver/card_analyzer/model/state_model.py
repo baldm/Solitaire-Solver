@@ -2,7 +2,7 @@
 
 
 class State_model():
-    def __init__(self,board : list(list),foundations : list(list),stock : bool, talon : list):
+    def __init__(self,board : list[list],foundations : list[list],stock : list, talon : list):
         self.board = board
         self.foundations = foundations
         self.prev_state : State_model = self

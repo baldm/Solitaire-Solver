@@ -1,6 +1,5 @@
-from sympy import false
-from model.action_model import Action_model
-from model.state_model import State_model
+from ..model.action_model import Action_model
+from ..model.state_model import State_model
 
 class Solitaire_controller():
     def __init__(self):
@@ -16,29 +15,34 @@ class Solitaire_controller():
         foundations = state.foundations
 
         ## actions regarding talon
-        for card,card_index in range (2,len(state.talon),3):
-            if card_index == len(state.talon)-1:
-                for to_row in range(0,len(board) + len(foundations) + 1):
-                        action = Action_model(card_index, -1, to_row)
-                        if self.is_move_legal(action, state):
-                            actions.append(action)
-            elif (card_index+1)%3 == 0:
-                action = Action_model()
-                action.get_talon = True
-                return action
+        if not False in state.talon:
+            for card,card_index in range (2,len(state.talon),3):
+                if card_index == len(state.talon)-1:
+                    for to_row in range(0,len(board) + len(foundations) + 1):
+                            action = Action_model(card_index, -1, to_row)
+                            if self.is_move_legal(action, state):
+                                actions.append(action)
+                elif (card_index+1)%3 == 0:
+                    action = Action_model()
+                    action.get_talon = True
+                    return action
+        
+
 
 
         
         ##actions regarding hand
-        if state.talon[2] == '[]':
-            action = Action_model()
-            action.get_talon = True
-            action.get_card = True
-            actions.append(action)
-        for to_row in range(0,len(board) + len(foundations) + 1):
-                action = Action_model()
-                action.get_talon = True
-                actions.append(action)
+        if not False in state.talon:
+            if len(state.talon) >= 3:
+                if state.talon[-3] == '[]':
+                    action = Action_model()
+                    action.get_talon = True
+                    action.get_card = True
+                    actions.append(action)
+                for to_row in range(0,len(board) + len(foundations) + 1):
+                        action = Action_model()
+                        action.get_talon = True
+                        actions.append(action)
                 
 
                 
@@ -52,7 +56,7 @@ class Solitaire_controller():
                     action = Action_model()
                     action.get_card = True
                     return action
-
+            
             for card,card_index in board[row]:
                 if card == '[]':
                     continue

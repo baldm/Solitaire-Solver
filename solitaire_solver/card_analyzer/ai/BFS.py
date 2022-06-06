@@ -1,7 +1,7 @@
 import queue
-from model.state_model import State_model
-from controller.solitaire_controller import Solitaire_controller
-from solitaire_solver.card_analyzer.model.action_model import Action_model
+from ..model.state_model import State_model
+from ..controller.solitaire_controller import Solitaire_controller
+from ..model.action_model import Action_model
 
 
 class BFS():
