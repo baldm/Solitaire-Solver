@@ -34,6 +34,41 @@ class TestSolitaire_controller(TestCase):
         self.assertTrue(solitaire_controller.Solitaire_controller.king_to_empty(self, card_king, empty_list))
         self.assertFalse(solitaire_controller.Solitaire_controller.king_to_empty(self, card_king, list))
 
-
     def test_descending_order(self):
-        self.fail()
+        values = range(1, 13)
+        keys = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
+        self.order = dict(keys, values) ## TODO dict laver fejl: "TypeError: dict expected at most 1 argument, got 2"
+        pass
+
+        ace = "AC"
+        two = "2H"
+        three = "3C"
+        four = "4H"
+        five = "5C"
+        six = "6H"
+        seven = "7C"
+        eight = "8H"
+        nine = "9C"
+        ten = "TH"
+        jack = "JC"
+        queen = "QH"
+        king = "KC"
+        ## Test correct descending order
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, ace, two))
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, two, three))
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, three, four))
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, four, five))
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, five, six))
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, six, seven))
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, seven, eight))
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, eight, nine))
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, nine, ten))
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, ten, jack))
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, jack, queen))
+        self.assertTrue(solitaire_controller.Solitaire_controller.descending_order(self, queen, king))
+        ## Test edge cases
+        self.assertFalse(solitaire_controller.Solitaire_controller.descending_order(self, king, ace))
+        self.assertFalse(solitaire_controller.Solitaire_controller.descending_order(self, ace, king))
+
+
+
