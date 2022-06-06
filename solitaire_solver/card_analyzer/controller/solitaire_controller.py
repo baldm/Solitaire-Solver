@@ -33,12 +33,12 @@ class Solitaire_controller():
 
                 
         #Checks moves for every card in the tableau
-        for row in range (0,len(board)+1):        
-            for card,card_index in board[row]:
+        for row_index,row in enumerate(board):        
+            for card_index,card in enumerate(row):
                 if card == '[]':
                     continue
                 for to_row in range(0,len(board) + len(foundations) + 1):
-                    action = Action_model(card_index, row, to_row)
+                    action = Action_model(card_index, row_index, to_row)
                     if self.is_move_legal(action, state):
                         actions.append(action)
         return actions
@@ -65,8 +65,8 @@ class Solitaire_controller():
             return new_state
 
         if action.from_row == -1:
-            cards = [state.talon[-1]]
-            talon.pop()
+            cards = [state.talon[0]]
+            talon.pop(0)
         else:
             cards = board[action.from_row][action.card_index-1 : None]
             board[action.from_row] = board[action.from_row][:action.card_index-1]
@@ -74,7 +74,7 @@ class Solitaire_controller():
         if action.to_row < len(board):
             board[action.to_row] += cards
         else:
-            foundations[action.to_row%len(board)] = cards
+            foundations[action.to_row%len(board)] += cards
 
         
         new_state = State_model(board,foundations,stock,talon)
