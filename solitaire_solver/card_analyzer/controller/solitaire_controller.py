@@ -1,5 +1,3 @@
-from tkinter.tix import Tree
-from sympy import false, re
 from ..model.action_model import Action_model
 from ..model.state_model import State_model
 
