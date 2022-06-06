@@ -4,3 +4,5 @@ class Action_model():
         self.card_index = card_index
         self.from_row = from_row
         self.to_row = to_row
+        self.get_talon = False
+        self.get_card = False

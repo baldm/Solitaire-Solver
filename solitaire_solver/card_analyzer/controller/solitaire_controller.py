@@ -1,6 +1,5 @@
-from sympy import false
-from model.action_model import Action_model
-from model.state_model import State_model
+from ..model.action_model import Action_model
+from ..model.state_model import State_model
 
 class Solitaire_controller():
     def __init__(self):
@@ -15,7 +14,49 @@ class Solitaire_controller():
         board = state.board
         foundations = state.foundations
 
+        ## actions regarding talon
+        if not False in state.talon:
+            for card,card_index in range (2,len(state.talon),3):
+                if card_index == len(state.talon)-1:
+                    for to_row in range(0,len(board) + len(foundations) + 1):
+                            action = Action_model(card_index, -1, to_row)
+                            if self.is_move_legal(action, state):
+                                actions.append(action)
+                elif (card_index+1)%3 == 0:
+                    action = Action_model()
+                    action.get_talon = True
+                    return action
+        
+
+
+
+        
+        ##actions regarding hand
+        if not False in state.talon:
+            if len(state.talon) >= 3:
+                if state.talon[-3] == '[]':
+                    action = Action_model()
+                    action.get_talon = True
+                    action.get_card = True
+                    actions.append(action)
+                for to_row in range(0,len(board) + len(foundations) + 1):
+                        action = Action_model()
+                        action.get_talon = True
+                        actions.append(action)
+                
+
+                
+            
+
+                
+
         for row in range (0,len(board)+1):
+            if row > len(board):
+                if board[row][-1] == '[]':
+                    action = Action_model()
+                    action.get_card = True
+                    return action
+            
             for card,card_index in board[row]:
                 if card == '[]':
                     continue
@@ -30,21 +71,40 @@ class Solitaire_controller():
 
         board = state.board
         foundations = state.foundations
+        talon = state.talon
+        stock = state.stock
+
+        if action.get_talon:
+            talon += stock[-3:]
+            stock = stock[:-3]
+            new_state = State_model(board,foundations,stock,talon)
+            state.action = action
+            return new_state
+
+        if action.from_row == -1:
+            cards = [state.talon[-1]]
+            talon.pop()
+        else:
+            cards = board[action.from_row][action.card_index-1 : None]
+            board[action.from_row] = board[action.from_row][:action.card_index-1]
 
         if action.to_row < len(board):
-            board[action.to_row] += board[action.from_row][action.card_index-1 : None]
+            board[action.to_row] += cards
         else:
-            foundations[action.to_row%len(board)] = board[action.from_row][action.card_index : None]
+            foundations[action.to_row%len(board)] = cards
 
-
-        board[action.from_row] = board[action.from_row][:action.card_index-1]
-        new_state = State_model(board,foundations,state.stock,state.talon,state.stock)
+        
+        new_state = State_model(board,foundations,stock,talon)
         state.action = action
         return new_state
-
+        
 
     def is_move_legal(self, action : Action_model, state : State_model):
-        card = state.board[action.from_row][-1]
+        ##If card is taken from talon
+        if action.from_row == -1:
+            card = state.talon[-1]
+        else:
+            card = state.board[action.from_row][-1]
         #if you move to foundations
         if action.to_row > len(state.board):
             to_row = state.foundations[action.to_row%len(state.board)]
@@ -59,9 +119,9 @@ class Solitaire_controller():
 
         #Logic if moved to row on board
         to_row = state.board[action.to_row]
-
+      
         if False in to_row:
-
+            
             if not self.king_to_empty(card,state.board[action.to_row]):
                 return False
             return True
@@ -94,20 +154,18 @@ class Solitaire_controller():
             return True
         return False
 
-    ## If there are less than 3 cards in talon and stock combined the game is locked and unsolvable
-    def draw_from_stack(stock : list, talon : list):
-        if(len(talon)+len(stock)<3):
-            return False
-        return True
-
-    ## Can't move a card to the talon from other piles
-    def from_and_to_pile_is_legal(card_from : str, card_to : str, talon : list):
-        if not card_from in talon:
-            if card_to in talon:
+        ## If there are less than 3 cards in talon and stock combined the game is locked and unsolvable
+    def draw_from_stack(stock: list, talon: list):
+            if (len(talon) + len(stock) < 3):
                 return False
-        return True
+            return True
 
-
+        ## Can't move a card to the talon from other piles
+    def from_and_to_pile_is_legal(card_from: str, card_to: str, talon: list):
+            if not card_from in talon:
+                if card_to in talon:
+                    return False
+            return True
 
 
 
@@ -116,9 +174,10 @@ class Solitaire_controller():
             if row[-1] == '[]':
                 return True
         return self.is_goal(state)
-
+       
     def is_goal(self, state : State_model):
         for row in state.board:
             if not False in row:
                 return False
         return True
+        
