@@ -17,8 +17,8 @@ class Solitaire_controller():
         
         ## actions regarding moving card from talon
         if not False in state.talon:
-            card_index = len(state.talon) -1
-            card = state.talon[-1]               
+            card_index = 0
+            card = state.talon[0]               
             for to_row in range(0,len(board) + len(foundations) + 1):
                 action = Action_model(card_index, -1, to_row)
                 if self.is_move_legal(action, state):
@@ -58,10 +58,16 @@ class Solitaire_controller():
         stock = state.stock
 
         if action.get_talon:
-            talon += stock[-3:]
-            stock = stock[:-3]
+            if stock >= 3:
+                talon = stock[-3:] + talon
+                stock = stock[:-3]
+                ## If we need to shuffle talon into stock
+            else:
+                stock = talon + stock
+                talon = []
+            
             new_state = State_model(board,foundations,stock,talon)
-            state.action = action
+            state.action = action  
             return new_state
 
         if action.from_row == -1:
