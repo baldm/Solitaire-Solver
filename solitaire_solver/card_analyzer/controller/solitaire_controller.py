@@ -31,21 +31,8 @@ class Solitaire_controller():
             action.get_talon = True
             actions.append(action)
 
-
-        ## If talon is not empty
-        if not False in state.talon:
-            if len(state.talon) >= 3:
-                if state.talon[-3] == '[]':
-                    action = Action_model()
-                    action.get_talon = True
-                    action.get_card = True
-                    actions.append(action)
-                for to_row in range(0,len(board) + len(foundations) + 1):
-                    action = Action_model()
-                    action.get_talon = True
-                    actions.append(action)
                 
-
+        #Checks moves for every card in the tableau
         for row in range (0,len(board)+1):
             if row > len(board):
                 if board[row][-1] == '[]':

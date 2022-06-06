@@ -15,8 +15,12 @@ class BFS():
         self.frontier.put(state)
         while not self.frontier.empty():
             currentState = self.frontier.get()
-            if game.is_terminal(currentState):
+            #Checks if the game is won
+            if game.is_goal(currentState):
                 return currentState
+            #checks if a new photo is needed
+            elif game.is_terminal(currentState):
+                self.leaves.append(currentState)
             else:
                 self.expand(currentState, game)
         
@@ -31,20 +35,16 @@ class BFS():
 
     
         for action in actions:
-            if action.get_card:
-                self.leaves.append(state)
-            else:
-                new_state = game.Result(state,action)
-                if not self.exists(new_state):
-                    new_state.prev_state = state
-                    self.frontier.put(new_state)
-                    self.expanded.append(new_state)
+            new_state = game.Result(state,action)
+            if not self.exists(new_state):
+                new_state.prev_state = state
+                self.frontier.put(new_state)
+                self.expanded.append(new_state)
 
             
 
     def exists(self,new_state : State_model):
         for state in self.expanded:
                 if state.equals(new_state):
-                    return True
-        
+                    return True 
         return False
