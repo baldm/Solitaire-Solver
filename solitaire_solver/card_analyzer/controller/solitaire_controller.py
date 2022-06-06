@@ -33,13 +33,7 @@ class Solitaire_controller():
 
                 
         #Checks moves for every card in the tableau
-        for row in range (0,len(board)+1):
-            if row > len(board):
-                if board[row][-1] == '[]':
-                    action = Action_model()
-                    action.get_card = True
-                    return action
-            
+        for row in range (0,len(board)+1):        
             for card,card_index in board[row]:
                 if card == '[]':
                     continue
