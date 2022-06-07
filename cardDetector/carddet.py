@@ -84,13 +84,37 @@ def remove_background(frame, contour):
     return result
 
 
-frame = cv2.imread("test/card_i.jpg")
+def match_card(tempcard , rank):
+    gray = cv2.cvtColor(tempCard, cv2.COLOR_BGR2GRAY)
+    # blur the frame to remove noise
+    blur = cv2.blur(gray, (3, 3))
+    # apply edge detection to the frame
+    edge = cv2.Canny(blur, 75, 200)
+    contours, _ = cv2.findContours(
+        edge, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)
+    # initialize the card contour
+    card_contour = []
+    for c in contours:
+        # approximate the contour
+        peri = cv2.arcLength(c, True)
+        approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+        card_contour.append(approx)
+
+    cv2.drawContours(tempCard,card_contour , -1, (0, 255, 255), 2)
+    cv2.imshow("test",tempCard)
+    cv2.waitKey(0)
+
+frame = cv2.imread("cardDetector/test/card_i.jpg")
 
 cards: List = []
 
 for i, contour in enumerate(detect_card(frame)):
     tempCard = remove_background(frame, contour)
     cards.append(tempCard)
-    cv2.imwrite("cards/card_" + str(i) + ".jpg", tempCard)
-
+    match_card(tempCard, None)
+    #cv2.imshow("Card " + str(i), tempCard)
+    
+    #cv2.imwrite("cards/card_" + str(i) + ".jpg", tempCard)
+cv2.waitKey(0)
 print(len(cards))
