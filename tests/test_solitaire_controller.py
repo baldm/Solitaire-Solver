@@ -1,5 +1,10 @@
+
 from unittest import TestCase
+
 from solitaire_solver.card_analyzer.controller import solitaire_controller
+from solitaire_solver.card_analyzer.ai import Agent,BFS
+from solitaire_solver.card_analyzer.model import action_model,state_model
+
 
 
 class TestSolitaire_controller(TestCase):
@@ -35,9 +40,9 @@ class TestSolitaire_controller(TestCase):
         self.assertFalse(solitaire_controller.Solitaire_controller.king_to_empty(self, card_king, list))
 
     def test_descending_order(self):
-        values = range(1, 13)
+        values = list(range(1, 14))
         keys = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
-        self.order = dict(keys, values) ## TODO dict laver fejl: "TypeError: dict expected at most 1 argument, got 2"
+        self.order = dict().fromkeys(keys, values) ## TODO dict laver fejl: "TypeError: dict expected at most 1 argument, got 2"
         pass
 
         ace = "AC"
@@ -70,5 +75,23 @@ class TestSolitaire_controller(TestCase):
         self.assertFalse(solitaire_controller.Solitaire_controller.descending_order(self, king, ace))
         self.assertFalse(solitaire_controller.Solitaire_controller.descending_order(self, ace, king))
 
+    def test_actions(self):
+        
 
+        game = solitaire_controller.Solitaire_controller()
+        board = [[],['2H', '3C'],['KH'],[],[],[],[]]
+        stock = ['[]','[]','[]']
+        foundations = [[],[],[],[]]
+        talon = []
+        state = state_model.State_model(board,foundations,stock,talon)
+
+        self.assertTrue(len(game.Actions(state)) == 6)
+        stock = ['[]','[]']
+        state.stock = stock
+
+        self.assertTrue(len(game.Actions(state)) == 5)
+        
+        talon = ['KS']
+        state.talon = talon
+        self.assertTrue(len(game.Actions(state)) == 11)
 

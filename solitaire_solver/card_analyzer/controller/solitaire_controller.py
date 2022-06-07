@@ -3,10 +3,10 @@ from ..model.state_model import State_model
 
 class Solitaire_controller():
     def __init__(self):
-        values = range(1,13)
+        values = list(range(1,14))
         keys = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
-        self.order = dict(keys,values)
-        pass
+        self.order = dict(zip(keys,values))
+        
 
     def Actions(self, state : State_model):
         ## returns list of actions which is possible in given state
@@ -16,10 +16,10 @@ class Solitaire_controller():
         
         
         ## actions regarding moving card from talon
-        if not False in state.talon:
+        if len(state.talon) > 0:
             card_index = 0
             card = state.talon[0]               
-            for to_row in range(0,len(board) + len(foundations) + 1):
+            for to_row in range(0,len(board) + len(foundations)):
                 action = Action_model(card_index, -1, to_row)
                 if self.is_move_legal(action, state):
                     actions.append(action)
@@ -37,10 +37,11 @@ class Solitaire_controller():
             for card_index,card in enumerate(row):
                 if card == '[]':
                     continue
-                for to_row in range(0,len(board) + len(foundations) + 1):
-                    action = Action_model(card_index, row_index, to_row)
-                    if self.is_move_legal(action, state):
-                        actions.append(action)
+                for to_row in range(0,len(board) + len(foundations)):
+                    if to_row != row_index:
+                        action = Action_model(card_index, row_index, to_row)
+                        if self.is_move_legal(action, state):
+                            actions.append(action)
         return actions
         
 
@@ -89,9 +90,9 @@ class Solitaire_controller():
         else:
             card = state.board[action.from_row][-1]
         #if you move to foundations
-        if action.to_row > len(state.board):
+        if action.to_row >= len(state.board):
             to_row = state.foundations[action.to_row%len(state.board)]
-            if False in to_row:
+            if len(to_row) == 0:
                 if card[0] == 'A':
                     return True
                     ## todo add check if same type
@@ -103,7 +104,7 @@ class Solitaire_controller():
         #Logic if moved to row on board
         to_row = state.board[action.to_row]
       
-        if False in to_row:
+        if len(to_row) == 0:
             
             if not self.king_to_empty(card,state.board[action.to_row]):
                 return False
