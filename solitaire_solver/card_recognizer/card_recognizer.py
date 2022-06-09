@@ -17,10 +17,10 @@ class CardRecognizer:
     def __init__(self):
         self.temp_output = {
             'foundation': [
-                ['AD', '2D', '3D'],
-                ['AH'],
-                ['AC'],
-                ['AS']
+                'AD',
+                'AH',
+                'AC',
+                'AS'
             ],
             'board': [
                 ['[]', '8D'],
@@ -31,12 +31,9 @@ class CardRecognizer:
                 ['2H'],
                 ['9D']
             ],
-            'stock': [
-                'asdasd'
-            ],
-            'talon': [
-                '4C','10S','KC'
-            ]
+            'talon': 
+                '4C'
+            
 
         }
 
