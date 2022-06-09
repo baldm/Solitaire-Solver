@@ -11,4 +11,7 @@ class CardAnalyzer:
 
     def get_next_move(self, card_info):
 
-        return {'move_from': 3, 'move_card': '4H', 'move_to': '5C'}
+        return [
+            {'move_from': 3, 'move_card': '4H', 'move_to': '5C'},
+            {'move_from': 4, 'move_card': '3S', 'move_to': '4H'}
+        ]
