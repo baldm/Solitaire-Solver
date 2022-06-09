@@ -96,7 +96,7 @@ class Solitaire_controller():
                 if card[0] == 'A':
                     return True
                     ## todo add check if same type
-            elif self.descending_order(card,to_row[-1]) and card == state.board[action.to_row][-1]:
+            elif self.descending_order(card,to_row[-1]) and card[1] == state.board[action.to_row][-1][1]:
                 return True
             return False
 
