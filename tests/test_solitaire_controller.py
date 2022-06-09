@@ -42,8 +42,8 @@ class TestSolitaire_controller(TestCase):
     def test_descending_order(self):
         values = list(range(1, 14))
         keys = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
-        self.order = dict().fromkeys(keys, values) ## TODO dict laver fejl: "TypeError: dict expected at most 1 argument, got 2"
-        pass
+        self.order = dict(zip(keys, values))
+        
 
         ace = "AC"
         two = "2H"
