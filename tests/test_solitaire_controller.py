@@ -76,8 +76,6 @@ class TestSolitaire_controller(TestCase):
         self.assertFalse(solitaire_controller.Solitaire_controller.descending_order(self, ace, king))
 
     def test_actions(self):
-        
-
         game = solitaire_controller.Solitaire_controller()
         board = [[],['2H', '3C'],['KH'],[],[],[],[]]
         stock = ['[]','[]','[]']
@@ -95,3 +93,22 @@ class TestSolitaire_controller(TestCase):
         state.talon = talon
         self.assertTrue(len(game.Actions(state)) == 11)
 
+
+    def test_is_terminal(self):
+        game = solitaire_controller.Solitaire_controller()
+        board = [[],[],[],[],[],[],[]]
+        stock = ['[]','[]','[]']
+        foundations = [[],[],[],[]]
+        talon = []
+        state = state_model.State_model(board,foundations,stock,talon)
+        ## When board and talon is empty
+        self.assertTrue(solitaire_controller.Solitaire_controller.is_terminal(self, state))
+        ## When board is populated and talon is empty
+        state.board = [[],['AH'],[],[],[],[],[]]
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_terminal(self, state))
+        ## When both board and talon is populated
+        state.talon = ['2C']
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_terminal(self, state))
+        ## When board is empty and talon populated
+        state.board = [[],[],[],[],[],[],[]]
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_terminal(self, state))
