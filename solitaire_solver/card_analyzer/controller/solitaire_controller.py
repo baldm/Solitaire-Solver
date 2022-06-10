@@ -154,9 +154,9 @@ class Solitaire_controller():
        
     def is_goal(self, state : State_model):
         for row in state.board:
-            if not False in row:
+            if row:
                 return False
-        if not False in state.talon or not False in state.stock:
+        if state.talon or state.stock:
             return False
         return True
         

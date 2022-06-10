@@ -114,8 +114,8 @@ class TestSolitaire_controller(TestCase):
         self.assertFalse(solitaire_controller.Solitaire_controller.is_terminal(self, state))
 
 
-        def test_is_goal(self):
-            game = solitaire_controller.Solitaire_controller()
+    def test_is_goal(self):
+        game = solitaire_controller.Solitaire_controller()
         board = [[],[],[],[],[],[],[]]
         stock = ['[]','[]','[]']
         foundations = [[],[],[],[]]
