@@ -112,3 +112,33 @@ class TestSolitaire_controller(TestCase):
         ## When board is empty and talon populated
         state.board = [[],[],[],[],[],[],[]]
         self.assertFalse(solitaire_controller.Solitaire_controller.is_terminal(self, state))
+
+
+        def test_is_goal(self):
+            game = solitaire_controller.Solitaire_controller()
+        board = [[],[],[],[],[],[],[]]
+        stock = ['[]','[]','[]']
+        foundations = [[],[],[],[]]
+        talon = []
+        state = state_model.State_model(board,foundations,stock,talon)
+        ## If everything is empty - technically we should populate foundation, but this isn't checked in the method
+        self.assertTrue(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## Populate board, empty stock and empty talon
+        state.board = [[],['AH'],[],[],[],[],[]]
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## Populate board, populate stock and empty talon
+        state.stock = ['[4D]','[8H]','[TC]']
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## Populate everything
+        state.talon = ['2C']
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## Empty board, populate stock and populate talon
+        board = [[],[],[],[],[],[],[]]
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## Empty board, populate stock, and empty talon
+        state.talon = []
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## empty board, empty stock and populate talon
+        state.talon = ['2C']
+        stock = ['[]','[]','[]']
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
