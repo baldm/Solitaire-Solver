@@ -114,10 +114,10 @@ class TestSolitaire_controller(TestCase):
         self.assertFalse(solitaire_controller.Solitaire_controller.is_terminal(self, state))
 
 
-        def test_is_goal(self):
-            game = solitaire_controller.Solitaire_controller()
+    def test_is_goal(self):
+        game = solitaire_controller.Solitaire_controller()
         board = [[],[],[],[],[],[],[]]
-        stock = ['[]','[]','[]']
+        stock = []
         foundations = [[],[],[],[]]
         talon = []
         state = state_model.State_model(board,foundations,stock,talon)
@@ -127,7 +127,7 @@ class TestSolitaire_controller(TestCase):
         state.board = [[],['AH'],[],[],[],[],[]]
         self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
         ## Populate board, populate stock and empty talon
-        state.stock = ['[4D]','[8H]','[TC]']
+        state.stock = ['4D','8H','TC']
         self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
         ## Populate everything
         state.talon = ['2C']
