@@ -96,21 +96,21 @@ class TestSolitaire_controller(TestCase):
 
     def test_is_terminal(self):
         game = solitaire_controller.Solitaire_controller()
-        board = [[],[],[],[],[],[],[]]
-        stock = ['[]','[]','[]']
+        board = [['[]'],[],[],[],[],[],[]]
+        stock = []
         foundations = [[],[],[],[]]
         talon = []
         state = state_model.State_model(board,foundations,stock,talon)
-        ## When board and talon is empty
+        ## Board has a facedown
         self.assertTrue(solitaire_controller.Solitaire_controller.is_terminal(self, state))
-        ## When board is populated and talon is empty
-        state.board = [[],['AH'],[],[],[],[],[]]
-        self.assertFalse(solitaire_controller.Solitaire_controller.is_terminal(self, state))
-        ## When both board and talon is populated
-        state.talon = ['2C']
-        self.assertFalse(solitaire_controller.Solitaire_controller.is_terminal(self, state))
-        ## When board is empty and talon populated
+        ## Board and talon both has facedown
+        state.talon = ['[]']
+        self.assertTrue(solitaire_controller.Solitaire_controller.is_terminal(self, state))
+        ## Talon has a facedown
         state.board = [[],[],[],[],[],[],[]]
+        self.assertTrue(solitaire_controller.Solitaire_controller.is_terminal(self, state))
+        ## No facedown in either board or talon
+        state.talon = []
         self.assertFalse(solitaire_controller.Solitaire_controller.is_terminal(self, state))
 
 
