@@ -146,9 +146,9 @@ class Solitaire_controller():
 
     def is_terminal(self,state : State_model):
         for row in state.board:
-            if row[-1] == '[]':
+            if row and row[-1] == '[]':
                 return True
-        if state.talon[-1] == '[]':
+        if state.talon and state.talon[-1] == '[]':
             return True
         return False
        
