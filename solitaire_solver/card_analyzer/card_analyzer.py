@@ -7,16 +7,10 @@ from .controller.solitaire_controller import Solitaire_controller
 class CardAnalyzer:
 
     def __init__(self,board):
-        self.card_info = ""
-        stock = ['[]'] * 24
-        talon = []
-        foundations = [[],[],[],[]]
-
-
-        strategy = BFS()
+        self.strategy = BFS()
         self.game = Solitaire_controller()
-        self.agent = Agent(self.game,strategy)
-        self.state = State_model(board,foundations,stock,talon)
+        self.agent = Agent(self.game,self.strategy)
+        self.state = None
     
         
         
@@ -30,13 +24,20 @@ class CardAnalyzer:
 
 
     def update_card(self,card):
-        if self.state.action.from_row == -1:
-            self.state.talon[0] = card
+        if len(card) == 1:
+            if self.state.action.from_row == -1:
+                self.state.talon[0] = card
+            else:
+                for row in self.state.board:
+                    if row and row[-1] == '[]':
+                        row[-1] = card
+                        break
         else:
-            for row in self.state.board:
-                if row and row[-1] == '[]':
-                    row[-1] = card
-                    break
+            stock = ['[]'] * 24
+            talon = []
+            foundations = [[],[],[],[]]
+            self.state = State_model(card,foundations,stock,talon)
+
             
     def get_next_moves(self):
 

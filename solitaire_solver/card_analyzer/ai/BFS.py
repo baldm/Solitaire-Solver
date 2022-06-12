@@ -25,6 +25,9 @@ class BFS():
                 self.expand(currentState, game)
         
         ##Make Heuristic on leaves and return best state
+        if self.leaves:
+            return self.leaves[0]
+    
         return False
     
 
