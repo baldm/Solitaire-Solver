@@ -1,3 +1,4 @@
+from fractions import Fraction
 from typing import List
 import cv2
 from cv2 import imshow
@@ -213,57 +214,73 @@ def crop_image(_frame, contour):
     #finds center of card
     tempcard.find_center()
     
-    tempcard.warp = flattener(_frame, tempcard.corner_pts, tempcard.width, tempcard.height)
+    tempcard.warp = flattener(_frame, tempcard.corner_pts, tempcard.w, tempcard.h)
     
     
     CORNER_WIDTH = 32
     CORNER_HEIGHT = 84
-    Qcorner = tempcard.warp[0:CORNER_HEIGHT, 0:CORNER_WIDTH]
-    Qcorner_zoom = cv2.resize(Qcorner, (0,0), fx=4, fy=4)
-    
-    
-    # Adaptive threshold levels
-    BKG_THRESH = 60
-    CARD_THRESH = 30
-    
-    white_level = Qcorner_zoom[15,int((CORNER_WIDTH*4)/2)]
-    thresh_level = white_level - CARD_THRESH
-    if (thresh_level <= 0):
-        thresh_level = 1
-    retval, query_thresh = cv2.threshold(Qcorner_zoom, thresh_level, 255, cv2. THRESH_BINARY_INV)
-    
-    # Split in to top and bottom half (top shows rank, bottom shows suit)
-    Qrank = query_thresh[20:185, 0:128]
-    Qsuit = query_thresh[186:336, 0:128]
-    
-    # Find rank contour and bounding rectangle, isolate and find largest contour
-    Qrank_cnts, hier = cv2.findContours(Qrank, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-    Qrank_cnts = sorted(Qrank_cnts, key=cv2.contourArea,reverse=True)
+    #200x300
+    Qcorner1 = tempcard.warp[0:CORNER_HEIGHT, 0:CORNER_WIDTH]
+    Qcorner2 = tempcard.warp[0:CORNER_HEIGHT, 200-CORNER_WIDTH:200]
+    Qcorner3 = cv2.rotate(tempcard.warp[300-CORNER_HEIGHT:300, 200-CORNER_WIDTH:200],cv2.ROTATE_180)
+    Qcorner4 = cv2.rotate(tempcard.warp[300-CORNER_HEIGHT:300,0:CORNER_WIDTH],cv2.ROTATE_180)
+    Qcards = [Qcorner1, Qcorner2, Qcorner3, Qcorner4]
+    #cv2.imshow("Qcards1", Qcorner1)
+    #cv2.imshow("Qcards2", Qcorner2)
+    #cv2.imshow("Qcards3", Qcorner3)
+    #cv2.imshow("Qcards4", Qcorner4)
+    i = 0
+    for Qcorner in Qcards:
+        
+        Qcorner_zoom = cv2.resize(Qcorner, (0,0), fx=4, fy=4)
+        
+        
+        # Adaptive threshold levels
+        BKG_THRESH = 60
+        CARD_THRESH = 30
+        
+        white_level = Qcorner_zoom[15,int((CORNER_WIDTH*4)/2)]
+        thresh_level = white_level - CARD_THRESH
+        if (thresh_level <= 0):
+            thresh_level = 1
+        retval, query_thresh = cv2.threshold(Qcorner_zoom, thresh_level, 255, cv2. THRESH_BINARY_INV)
+        
+        # Split in to top and bottom half (top shows rank, bottom shows suit)
+        Qrank = query_thresh[20:185, 0:128]
+        Qsuit = query_thresh[186:336, 0:128]
+        
+        # Find rank contour and bounding rectangle, isolate and find largest contour
+        Qrank_cnts, hier = cv2.findContours(Qrank, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        Qrank_cnts = sorted(Qrank_cnts, key=cv2.contourArea,reverse=True)
 
-    # Dimensions of rank train images
-    RANK_WIDTH = 70
-    RANK_HEIGHT = 125
+        # Dimensions of rank train images
+        RANK_WIDTH = 70
+        RANK_HEIGHT = 125
+        
 
-    if len(Qrank_cnts) != 0:
-        x1,y1,w1,h1 = cv2.boundingRect(Qrank_cnts[0])
-        Qrank_roi = Qrank[y1:y1+h1, x1:x1+w1]
-        Qrank_sized = cv2.resize(Qrank_roi, (RANK_WIDTH,RANK_HEIGHT), 0, 0)
-        tempcard.rank_img = Qrank_sized
+        if len(Qrank_cnts) != 0:
+            x1,y1,w1,h1 = cv2.boundingRect(Qrank_cnts[0])
+            Qrank_roi = Qrank[y1:y1+h1, x1:x1+w1]
+            Qrank_sized = cv2.resize(Qrank_roi, (RANK_WIDTH,RANK_HEIGHT), 0, 0)
+            tempcard.rank_img.append(Qrank_sized)
 
-    # Find suit contour and bounding rectangle, isolate and find largest contour
-    Qsuit_cnts, hier = cv2.findContours(Qsuit, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-    Qsuit_cnts = sorted(Qsuit_cnts, key=cv2.contourArea,reverse=True)
+        # Find suit contour and bounding rectangle, isolate and find largest contour
+        Qsuit_cnts, hier = cv2.findContours(Qsuit, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        Qsuit_cnts = sorted(Qsuit_cnts, key=cv2.contourArea,reverse=True)
 
-    # Dimensions of suit train images
-    SUIT_WIDTH = 70
-    SUIT_HEIGHT = 100
+        # Dimensions of suit train images
+        SUIT_WIDTH = 70
+        SUIT_HEIGHT = 100
 
+        #cv2.imshow("Train Rank", tempcard.rank_img)
+        #cv2.waitKey(0)
 
-    if len(Qsuit_cnts) != 0:
-        x2,y2,w2,h2 = cv2.boundingRect(Qsuit_cnts[0])
-        Qsuit_roi = Qsuit[y2:y2+h2, x2:x2+w2]
-        Qsuit_sized = cv2.resize(Qsuit_roi, (SUIT_WIDTH, SUIT_HEIGHT), 0, 0)
-        tempcard.suit_img = Qsuit_sized
+        if len(Qsuit_cnts) != 0:
+            x2,y2,w2,h2 = cv2.boundingRect(Qsuit_cnts[0])
+            Qsuit_roi = Qsuit[y2:y2+h2, x2:x2+w2]
+            Qsuit_sized = cv2.resize(Qsuit_roi, (SUIT_WIDTH, SUIT_HEIGHT), 0, 0)
+            tempcard.suit_img.append(Qsuit_sized)
+        i += 1
 
     return tempcard
     
@@ -309,32 +326,36 @@ def match_card(qCard, train_ranks, train_suits):
         
         # Difference the query card rank image from each of the train rank images,
         # and store the result with the least difference
-        for Trank in train_ranks:
+        for rank_img in qCard.rank_img:
+            for Trank in train_ranks:
+                    #cv2.imshow("Query Rank", rank_img)
+                    #cv2.imshow("Train Rank", Trank.img)
+                    cv2.waitKey(0)
+                    diff_img = cv2.absdiff(rank_img, Trank.img)
+                    rank_diff = int(np.sum(diff_img)/255)
+                    
+                    if rank_diff < best_rank_match_diff:
+                        best_rank_diff_img = diff_img
+                        best_rank_match_diff = rank_diff
+                        best_rank_name = Trank.name
 
-                diff_img = cv2.absdiff(qCard.rank_img, Trank.img)
-                rank_diff = int(np.sum(diff_img)/255)
-                
-                if rank_diff < best_rank_match_diff:
-                    best_rank_diff_img = diff_img
-                    best_rank_match_diff = rank_diff
-                    best_rank_name = Trank.name
-
+        for suit_img in qCard.suit_img:
         # Same process with suit images
-        for Tsuit in train_suits:
-                
-                diff_img = cv2.absdiff(qCard.suit_img, Tsuit.img)
-                suit_diff = int(np.sum(diff_img)/255)
-                
-                if suit_diff < best_suit_match_diff:
-                    best_suit_diff_img = diff_img
-                    best_suit_match_diff = suit_diff
-                    best_suit_name = Tsuit.name
+            for Tsuit in train_suits:
+                    
+                    diff_img = cv2.absdiff(suit_img, Tsuit.img)
+                    suit_diff = int(np.sum(diff_img)/255)
+                    
+                    if suit_diff < best_suit_match_diff:
+                        best_suit_diff_img = diff_img
+                        best_suit_match_diff = suit_diff
+                        best_suit_name = Tsuit.name
 
     # Combine best rank match and best suit match to get query card's identity.
     # If the best matches have too high of a difference value, card identity
     # is still Unknown
     
-    RANK_DIFF_MAX = 2000
+    RANK_DIFF_MAX = 2500
     SUIT_DIFF_MAX = 700
     if (best_rank_match_diff < RANK_DIFF_MAX):
         best_rank_match_name = best_rank_name
@@ -365,10 +386,10 @@ def draw_results(image, qCard):
     
     # Can draw difference value for troubleshooting purposes
     # (commented out during normal operation)
-    #r_diff = str(qCard.rank_diff)
-    #s_diff = str(qCard.suit_diff)
-    #cv2.putText(image,r_diff,(x+20,y+30),font,0.5,(0,0,255),1,cv2.LINE_AA)
-    #cv2.putText(image,s_diff,(x+20,y+50),font,0.5,(0,0,255),1,cv2.LINE_AA)
+    r_diff = str(qCard.rank_diff)
+    s_diff = str(qCard.suit_diff)
+    cv2.putText(image,r_diff,(x+20,y+30),font,0.5,(0,0,255),1,cv2.LINE_AA)
+    cv2.putText(image,s_diff,(x+20,y+50),font,0.5,(0,0,255),1,cv2.LINE_AA)
 
     return image
 
@@ -419,26 +440,34 @@ def load_suits(filepath):
 
     return train_suits
 
-frame = cv2.imread("cardDetector/test/card_i.jpg")
+def detect_cards(frame): 
+    cards = []   
+    for i, contour in enumerate(detect_card(frame)):
+        temp = crop_image(frame, contour)
+        #best_rank_match_name, best_suit_match_name, best_rank_match_diff, best_suit_match_diff
+        temp.best_rank_match,temp.best_suit_match,temp.rank_diff,temp.suit_diff= match_card(temp, load_ranks("cardDetector/King/"), load_suits("cardDetector/King/"))
+        draw_results(frame, temp)
+        if temp.best_rank_match != "Unknown" and temp.best_suit_match != "Unknown":
+            cards.append(temp)
+  
+    return cards
 
-cards: List = []
 
-for i, contour in enumerate(detect_card(frame)):
-    temp = crop_image(frame, contour)
-    #best_rank_match_name, best_suit_match_name, best_rank_match_diff, best_suit_match_diff
-    temp.best_rank_match,temp.best_suit_match,temp.rank_diff,temp.suit_diff= match_card(temp, load_ranks("cardDetector/King/"), load_suits("cardDetector/King/"))
-    draw_results(frame, temp)
-    #cv2.imshow("Card " + str(i),)
-    #cv2.waitKey(0)
-    #tempCard = remove_background(frame, contour)
-    #cards.append(tempCard)
-    #cv2.drawContours(tempCard, card_type(tempCard), -1, (0, 255, 0), 2)
-    #cv2.imshow("Card Contour", tempCard)
-    #cv2.waitKey(0)
-    #cv2.imwrite("cardDetector/cards/card_" + str(i) + ".jpg", tempCard)
-
-resized = cv2.resize(frame, (1500,1000), interpolation = cv2.INTER_AREA)
-cv2.imshow("Card", resized)
-cv2.waitKey(0)
-
-#print(len(cards))
+def save_cards(frame,saved_cards_array):
+    cards = detect_cards(frame)
+    if first:
+        firts= False
+        i = 0
+        for card in cards:
+            saved_cards_array[i].append(card)
+            i += 1
+first = True
+saved_cards_array = []
+for i in range(12):
+    saved_cards_array.append([])
+paths = os.listdir("cardDetector/test2")  
+for path in paths:
+    frame = cv2.imread("cardDetector/test2/"+path)
+    save_cards(frame,saved_cards_array)
+    
+    print(saved_cards_array)
