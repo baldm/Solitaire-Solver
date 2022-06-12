@@ -1,9 +1,4 @@
-from calendar import c
-from fractions import Fraction
-from typing import List
 import cv2
-from cv2 import imshow
-from cv2 import imread
 import numpy as np
 import os
 import sys
