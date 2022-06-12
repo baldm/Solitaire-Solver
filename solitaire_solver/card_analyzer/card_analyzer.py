@@ -6,7 +6,7 @@ from .controller.solitaire_controller import Solitaire_controller
 
 class CardAnalyzer:
 
-    def __init__(self,board):
+    def __init__(self):
         self.strategy = BFS()
         self.game = Solitaire_controller()
         self.agent = Agent(self.game,self.strategy)
