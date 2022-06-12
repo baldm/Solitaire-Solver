@@ -43,7 +43,6 @@ class CardAnalyzer:
         # run ai
         self.state = self.agent.find_moves(self.state)
         
-        
         # if new card is needed
         if self.state != False:
             
@@ -67,13 +66,13 @@ class CardAnalyzer:
 
                 else:
                     get_talon.append(False)
-                #Appending the card we move
+                    #Appending the card we move
                     if action.from_row == -1:
                         card_move.append[temp_state.talon[0]]
                     else:
                         card_move.append(temp_state.board[action.from_row][action.card_index])
-                    card_to.append(action.to_row)
-                    move_from.append(action.from_row)
+                    card_to.append(str(action.to_row))
+                    move_from.append(str(action.from_row))
                 temp_state = temp_state.prev_state
 
                 
@@ -82,17 +81,18 @@ class CardAnalyzer:
             move_from.reverse()
             get_talon.reverse()
 
-
-            values = [move_from,card_move,card_to,get_talon]
-            keys = ['move_from','move_card','move_to','get_talon']
-            output = dict(zip(keys,values))
+            for i in range(0,len(card_to)):
+                output.append({'move_from' : move_from[i],'move_card' : card_move[i],'move_to' : card_to[i],'get_talon' : get_talon[i]}) 
+            return output
+        else:
+            return False
 
 
 
         # make list of moves and return them
-        return output
+        
         
        # [
-       #     {'move_from': 3, 'move_card': '4H', 'move_to': '5C'},
-       #     {'move_from': 4, 'move_card': '3S', 'move_to': '4H'}
+       #     {'move_from': '3', 'move_card': '4H', 'move_to': '-1'},
+       #     {'move_from': '4', 'move_card': '3S', 'move_to': '8'}
        # ]
