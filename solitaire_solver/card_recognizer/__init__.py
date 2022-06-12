@@ -1,1 +1,2 @@
-from .card_recognizer import CardRecognizer
+from .card_recognizer import card_recognizer
+

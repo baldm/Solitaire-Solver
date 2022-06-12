@@ -2,6 +2,7 @@ class CardAnalyzer:
 
     def __init__(self):
         self.card_info = ""
+        self.board = []
 
         # TODO: Her kan i implementer de objecter i skal bruge til det
 
