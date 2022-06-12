@@ -13,7 +13,6 @@ def process_and_analyze_image(image):
     # Get Analyze the incoming image and get
     # info from all cards and their placement
     card_info = card_recognizer.recognize_cards(image)
-    print(card_info)
     #(image,card_analyzer.board)
 
     # analyzing board
@@ -21,7 +20,3 @@ def process_and_analyze_image(image):
     next_move = card_analyzer.get_next_move(card_info)
 
     return next_move
-
-process_and_analyze_image("cardDetector/test/IMG_2076.JPG")
-process_and_analyze_image("cardDetector/test/IMG_2079.JPG")
-process_and_analyze_image("cardDetector/test/rude4.jpg")
