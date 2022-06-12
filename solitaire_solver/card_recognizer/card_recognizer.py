@@ -441,7 +441,7 @@ class card_recognizer:
     
 
     def recognize_cards(self,frame):
-        __frame = imread(frame)
+        __frame = cv2.imread(frame)
         output =  []
         cards = card_recognizer.detect_cards(__frame)
         if self.saved_cards_array == []:
