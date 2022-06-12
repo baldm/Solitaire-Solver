@@ -62,7 +62,7 @@ class Solitaire_controller():
                 talon = []
             
             new_state = State_model(board,foundations,stock,talon)
-            state.action = action  
+            new_state.action = action  
             return new_state
 
         if action.from_row == -1:
@@ -79,7 +79,7 @@ class Solitaire_controller():
 
         
         new_state = State_model(board,foundations,stock,talon)
-        state.action = action
+        new_state.action = action
         return new_state
         
 
