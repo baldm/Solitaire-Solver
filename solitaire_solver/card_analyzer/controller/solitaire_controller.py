@@ -160,26 +160,25 @@ class Solitaire_controller():
         val = 0
 
         action : Action_model = state.action
-
-        if action.get_talon:
-            val += 0
-
+        if self.ace_to_foundation:
+            val += 200
+            
         if action.from_row != -1:
-            val += 0
+            val += 50
             for card in state.board[action.from_row]:
                 if card == '[]':
-                    val += 0
+                    val += 5
         else:
-
-            val += 0
+            val += 250
 
         if action.to_row >= len(state.board):
-            val -= 0
+            val -= 1
         
-        val += self.even_piles(state.board, 0)
-        val += self.even_piles(state.foundations, 0)
+        val += self.even_piles(state.board, 5) # if weight = 5, max 35
+        val += self.even_piles(state.foundations, 10) # if weight = 10, max 40
+        val += self.same_symbols(state.board, 1) # if weight = 1, max 37
 
-        #Defining mean row length
+        return val
         
 
     def even_piles(self, lists, max_pts):
@@ -193,6 +192,27 @@ class Solitaire_controller():
         for row in lists:
             val += (max_pts - abs(len(row) - int(board_row_mean_length)))
         
+        if val < 0:
+            return 0
+
         return val
 
- 
+    def same_symbols(self, board, weight):
+        val = 0
+
+        for row in board:
+            for index, card in enumerate(row):
+                if card == '[]':
+                    continue
+                elif index > 1:
+                    if card[1] == row[index-2][1]:
+                        val += weight
+
+        return val
+
+    def ace_to_foundation(self, state : State_model):
+        action : Action_model = state.action
+        if action.to_row >= len(state.board):
+            if state.foundations[action.to_row%len(state.board)][-1][0] == 'A':
+                return True
+        return False
