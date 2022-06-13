@@ -93,6 +93,13 @@ class TestSolitaire_controller(TestCase):
         state.talon = talon
         self.assertTrue(len(game.Actions(state)) == 11)
 
+        state.stock = ['[]']*21
+        state.talon = ['AD','[]','[]']
+        state.board = [['5H'], ['[]', 'TC'], ['[]', '[]', '6D'], ['[]', '[]', '[]', '6C'], ['[]', '[]', '[]', '[]', '7C'], ['[]', '[]', '[]', '[]', '[]', '2D'], ['[]', '[]', '[]', '[]', '[]', '[]', 'JH']]
+
+        self.assertTrue(len(game.Actions(state)) == 8)
+        
+
 
     def test_is_terminal(self):
         game = solitaire_controller.Solitaire_controller()

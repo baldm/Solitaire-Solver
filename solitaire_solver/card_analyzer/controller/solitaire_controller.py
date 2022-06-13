@@ -81,9 +81,10 @@ class Solitaire_controller():
     def is_move_legal(self, action: Action_model, state: State_model):
         # If card is taken from talon
         if action.from_row == -1:
-            card = state.talon[-1]
+            card = state.talon[0]
         else:
             card = state.board[action.from_row][-1]
+            
         # if you move to foundations
         if action.to_row >= len(state.board):
             to_row = state.foundations[action.to_row % len(state.board)]
@@ -91,7 +92,7 @@ class Solitaire_controller():
                 if card[0] == 'A':
                     return True
                     # todo add check if same type
-            elif self.descending_order(card, to_row[-1]) and card[1] == state.board[action.to_row][-1][1]:
+            elif self.descending_order(card, to_row[-1]) and card[1] == state.board[action.to_row % len(state.board)][-1][1]:
                 return True
             return False
 
@@ -153,3 +154,65 @@ class Solitaire_controller():
         if state.talon or state.stock:
             return False
         return True
+
+    def eval(self,state : State_model):
+
+        val = 0
+
+        action : Action_model = state.action
+        if self.ace_to_foundation:
+            val += 200
+            
+        if action.from_row != -1:
+            val += 50
+            for card in state.board[action.from_row]:
+                if card == '[]':
+                    val += 5
+        else:
+            val += 250
+
+        if action.to_row >= len(state.board):
+            val -= 1
+        
+        val += self.even_piles(state.board, 5) # if weight = 5, max 35
+        val += self.even_piles(state.foundations, 10) # if weight = 10, max 40
+        val += self.same_symbols(state.board, 1) # if weight = 1, max 37
+
+        return val
+        
+
+    def even_piles(self, lists, max_pts):
+        val = 0
+        board_row_mean_length = 0
+        
+        for row in lists:
+            board_row_mean_length += len(row)
+        board_row_mean_length /= len(lists)
+
+        for row in lists:
+            val += (max_pts - abs(len(row) - int(board_row_mean_length)))
+        
+        if val < 0:
+            return 0
+
+        return val
+
+    def same_symbols(self, board, weight):
+        val = 0
+
+        for row in board:
+            for index, card in enumerate(row):
+                if card == '[]':
+                    continue
+                elif index > 1:
+                    if card[1] == row[index-2][1]:
+                        val += weight
+
+        return val
+
+    def ace_to_foundation(self, state : State_model):
+        action : Action_model = state.action
+        if action.to_row >= len(state.board):
+            if state.foundations[action.to_row%len(state.board)][-1][0] == 'A':
+                return True
+        return False
