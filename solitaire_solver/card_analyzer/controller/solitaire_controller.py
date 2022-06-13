@@ -81,9 +81,10 @@ class Solitaire_controller():
     def is_move_legal(self, action: Action_model, state: State_model):
         # If card is taken from talon
         if action.from_row == -1:
-            card = state.talon[-1]
+            card = state.talon[0]
         else:
             card = state.board[action.from_row][-1]
+            
         # if you move to foundations
         if action.to_row >= len(state.board):
             to_row = state.foundations[action.to_row % len(state.board)]
@@ -91,7 +92,7 @@ class Solitaire_controller():
                 if card[0] == 'A':
                     return True
                     # todo add check if same type
-            elif self.descending_order(card, to_row[-1]) and card[1] == state.board[action.to_row][-1][1]:
+            elif self.descending_order(card, to_row[-1]) and card[1] == state.board[action.to_row % len(state.board)][-1][1]:
                 return True
             return False
 
