@@ -56,7 +56,7 @@ class Solitaire_controller():
                 # If we need to shuffle talon into stock
             else:
                 stock = talon + stock
-                talon = []
+                talon = stock[-3:] + talon
 
             new_state = State_model(board, foundations, stock, talon)
             new_state.action = action
