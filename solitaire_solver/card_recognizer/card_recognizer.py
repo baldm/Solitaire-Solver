@@ -448,7 +448,7 @@ class card_recognizer:
         __frame = cv2.imread(frame)
         output = []
         cards = card_recognizer.detect_cards(__frame)
-        if self.i <= 7 :
+        if self.i <= 6:
             print("here")
             print(cards)
             for card in reversed(cards):
