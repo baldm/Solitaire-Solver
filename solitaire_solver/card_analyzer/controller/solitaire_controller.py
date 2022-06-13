@@ -166,7 +166,7 @@ class Solitaire_controller():
         else:
             if self.ace_to_foundation:
                 val += 200
-                
+
             if action.from_row != -1:
                 val += 50
                 for card in state.board[action.from_row]:
@@ -174,15 +174,15 @@ class Solitaire_controller():
                         val += 5
             else:
                 val += 250
-    
+
             if action.to_row >= len(state.board):
                 val -= 1
-            
-            val += self.even_piles(state.board, 5) # if weight = 5, max 35
-            val += self.even_piles(state.foundations, 10) # if weight = 10, max 40
-            val += self.same_symbols(state.board, 1) # if weight = 1, max 37
-    
-            return val
+
+        val += self.even_piles(state.board, 5) # if weight = 5, max 35
+        val += self.even_piles(state.foundations, 10) # if weight = 10, max 40
+        val += self.same_symbols(state.board, 1) # if weight = 1, max 37
+
+        return val
         
 
     def even_piles(self, lists, max_pts):
