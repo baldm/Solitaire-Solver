@@ -21,7 +21,7 @@ class CardAnalyzer:
 
     def update_card(self, card):
         if len(card) == 1:
-            if self.state.action.from_row == -1:
+            if self.state.action.get_talon or self.state.action.from_row == -1 :
                 self.state.talon[0] = card
             else:
                 for row in self.state.board:
