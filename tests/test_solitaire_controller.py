@@ -120,6 +120,16 @@ class TestSolitaire_controller(TestCase):
         state.talon = []
         self.assertFalse(solitaire_controller.Solitaire_controller.is_terminal(self, state))
 
+    def test_BFS(self):
+        game = solitaire_controller.Solitaire_controller()
+        stock = ['[]']*24
+        talon = []
+        board = [['2S'], ['[]', 'QC'], ['[]', '[]', '4S'], ['[]', '[]', '[]', 'QH'], ['[]', '[]', '[]', '[]', '2S'], ['[]', '[]', '[]', '[]', '[]', '4H'], ['[]', '[]', '[]', '[]', '[]', '[]', '4S']]
+        foundations = [[],[],[],[]]
+        state = state_model.State_model(board,foundations,stock,talon)
+        strategy = BFS.BFS()
+        agent = Agent.Agent(game,strategy)
+        agent.find_moves(state)
 
     def test_is_goal(self):
         game = solitaire_controller.Solitaire_controller()
