@@ -26,7 +26,14 @@ class BFS():
         
         ##Make Heuristic on leaves and return best state
         if self.leaves:
-            return self.leaves[0]
+            best_state = self.leaves[0]
+            best_val = game.eval(best_state)
+            for state in self.leaves:
+                temp_val = game.eval(state)
+                if temp_val > best_val:
+                    best_state = state
+                    best_val = temp_val
+            return best_state
     
         return False
     

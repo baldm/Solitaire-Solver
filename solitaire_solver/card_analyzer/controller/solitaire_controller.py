@@ -154,3 +154,45 @@ class Solitaire_controller():
         if state.talon or state.stock:
             return False
         return True
+
+    def eval(self,state : State_model):
+
+        val = 0
+
+        action : Action_model = state.action
+
+        if action.get_talon:
+            val += 0
+
+        if action.from_row != -1:
+            val += 0
+            for card in state.board[action.from_row]:
+                if card == '[]':
+                    val += 0
+        else:
+
+            val += 0
+
+        if action.to_row >= len(state.board):
+            val -= 0
+        
+        val += self.even_piles(state.board, 0)
+        val += self.even_piles(state.foundations, 0)
+
+        #Defining mean row length
+        
+
+    def even_piles(self, lists, max_pts):
+        val = 0
+        board_row_mean_length = 0
+        
+        for row in lists:
+            board_row_mean_length += len(row)
+        board_row_mean_length /= len(lists)
+
+        for row in lists:
+            val += (max_pts - abs(len(row) - int(board_row_mean_length)))
+        
+        return val
+
+ 
