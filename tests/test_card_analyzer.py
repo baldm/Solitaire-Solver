@@ -9,4 +9,11 @@ class TestCard_analyzer(TestCase):
         analyzer.update_card(board)
         analyzer.get_next_moves()
         analyzer.update_card(['9S'])
-    
+
+
+        board = [['2S'], ['[]', 'QC'], ['[]', '[]', '4S'], ['[]', '[]', '[]', 'QH'], ['[]', '[]', '[]', '[]', '2D'], ['[]', '[]', '[]', '[]', '[]', '4H'], ['[]', '[]', '[]', '[]', '[]', '[]', '4D']]
+        analyzer.update_card(board)
+        analyzer.get_next_moves()
+        analyzer.update_card(['TC'])
+        analyzer.get_next_moves()
+        analyzer.update_card(['9C'])
