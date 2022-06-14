@@ -27,4 +27,6 @@ class TestCard_analyzer(TestCase):
         analyzer.get_next_moves()
         analyzer.update_card(['AD'])
         analyzer.get_next_moves()
+        analyzer.update_card(['9C'])
+        analyzer.get_next_moves()
         a = 1

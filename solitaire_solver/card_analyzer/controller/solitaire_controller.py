@@ -86,7 +86,7 @@ class Solitaire_controller():
         if action.from_row == -1:
             card = state.talon[0]
         else:
-            card = state.board[action.from_row][-1]
+            card = state.board[action.from_row][action.card_index]
             
         # if you move to foundations
         if action.to_row >= len(state.board):
@@ -165,7 +165,7 @@ class Solitaire_controller():
         action : Action_model = state.action
 
         if action.get_talon:
-            return 250
+            return 1000
         else:
             if self.ace_to_foundation:
                 val += 200
