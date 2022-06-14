@@ -53,7 +53,10 @@ class CardAnalyzer:
                 action: Action_model = temp_state.action
 
                 if action.get_talon:
-                    card_move.append('')
+                    if len(temp_state.prev_state.talon) > 0:
+                        card_move.append(temp_state.prev_state.talon[0])
+                    else:
+                        card_move.append('')
                     card_to.append('')
                     move_from.append('')
                     get_talon.append(True)
