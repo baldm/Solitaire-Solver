@@ -47,7 +47,6 @@ async def upload_board_image(item: Image):
     # PROCESS IMAGE HERE:
     # sleep here to demonstrate processing image
     endpoint_output = process_and_analyze_image(save_path)
-    time.sleep(2)
 
     # Removing temp file
     remove(save_path)
