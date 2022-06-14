@@ -33,6 +33,7 @@ class BFS():
                 if temp_val > best_val:
                     best_state = state
                     best_val = temp_val
+            self.leaves = []
             return best_state
     
         return False
