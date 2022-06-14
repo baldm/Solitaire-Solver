@@ -52,6 +52,7 @@ class card_recognizer:
 
     def __init__(self) -> None:
         self.saved_cards_array = []
+        self.i = 0
 
     @staticmethod
     def detect_card(frame):
@@ -441,22 +442,28 @@ class card_recognizer:
 
         return card_number + card_name
 
+
+
     def recognize_cards(self, frame):
         __frame = cv2.imread(frame)
         output = []
         cards = card_recognizer.detect_cards(__frame)
-        if self.saved_cards_array == []:
-            firts = False
-            i = 0
+        if self.i <= 6:
+            print("here")
+            print(cards)
             for card in reversed(cards):
                 self.saved_cards_array.append([])
-                for j in range(0, i):
-                    self.saved_cards_array[i].append('[]')
-                self.saved_cards_array[i].append(
+                for j in range(0, self.i):
+                    self.saved_cards_array[self.i].append('[]')
+                self.saved_cards_array[self.i].append(
                     card_recognizer.make_string(card))
-                i += 1
-            output = self.saved_cards_array
+                self.i += 1
+                print(self.saved_cards_array)
+                print(self.i)
+            if self.i == 7:    
+                output = self.saved_cards_array
         else:
+            print("not here")
             for card in cards:
                 all_cards = []
                 card_str = card_recognizer.make_string(card)
