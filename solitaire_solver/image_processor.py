@@ -18,9 +18,9 @@ def process_and_analyze_image(image):
     print(card_info)
 
     # Updating board state
-    #card_analyzer.update_card(card_info)
+    card_analyzer.update_card(card_info)
     # main analyzing things go here
-    #next_move = card_analyzer.get_next_moves()
+    next_move = card_analyzer.get_next_moves()
 
-    #print("Next move:")
-    #print(next_move)
+    print("Next move:")
+    print(next_move)
