@@ -52,4 +52,4 @@ async def upload_board_image(item: Image):
     # Removing temp file
     remove(save_path)
 
-    return {'next_move': endpoint_output}
+    return endpoint_output
