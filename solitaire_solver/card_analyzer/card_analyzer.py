@@ -22,12 +22,11 @@ class CardAnalyzer:
     def update_card(self, card):
         if len(card) == 1:
             if self.state.action.get_talon or self.state.action.from_row == -1 :
-                self.state.talon[0] = card
+                self.state.talon[0] = card[0]
             else:
-                for row in self.state.board:
-                    if row and row[-1] == '[]':
-                        row[-1] = card
-                        break
+                self.state.board[self.state.action.from_row][-1] = card[0]
+                
+            self.state.prev_state = self.state
         else:
             stock = ['[]'] * 24
             talon = []
@@ -35,7 +34,7 @@ class CardAnalyzer:
             self.state = State_model(card, foundations, stock, talon)
 
     def get_next_moves(self):
-
+        
         # run ai
         self.state = self.agent.find_moves(self.state)
 
