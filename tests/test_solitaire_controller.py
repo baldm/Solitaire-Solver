@@ -42,8 +42,8 @@ class TestSolitaire_controller(TestCase):
     def test_descending_order(self):
         values = list(range(1, 14))
         keys = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
-        self.order = dict().fromkeys(keys, values) ## TODO dict laver fejl: "TypeError: dict expected at most 1 argument, got 2"
-        pass
+        self.order = dict(zip(keys, values))
+        
 
         ace = "AC"
         two = "2H"
@@ -76,8 +76,6 @@ class TestSolitaire_controller(TestCase):
         self.assertFalse(solitaire_controller.Solitaire_controller.descending_order(self, ace, king))
 
     def test_actions(self):
-        
-
         game = solitaire_controller.Solitaire_controller()
         board = [[],['2H', '3C'],['KH'],[],[],[],[]]
         stock = ['[]','[]','[]']
@@ -95,3 +93,69 @@ class TestSolitaire_controller(TestCase):
         state.talon = talon
         self.assertTrue(len(game.Actions(state)) == 11)
 
+        state.stock = ['[]']*21
+        state.talon = ['AD','[]','[]']
+        state.board = [['5H'], ['[]', 'TC'], ['[]', '[]', '6D'], ['[]', '[]', '[]', '6C'], ['[]', '[]', '[]', '[]', '7C'], ['[]', '[]', '[]', '[]', '[]', '2D'], ['[]', '[]', '[]', '[]', '[]', '[]', 'JH']]
+
+        self.assertTrue(len(game.Actions(state)) == 8)
+        
+
+
+    def test_is_terminal(self):
+        game = solitaire_controller.Solitaire_controller()
+        board = [['[]'],[],[],[],[],[],[]]
+        stock = []
+        foundations = [[],[],[],[]]
+        talon = []
+        state = state_model.State_model(board,foundations,stock,talon)
+        ## Board has a facedown
+        self.assertTrue(solitaire_controller.Solitaire_controller.is_terminal(self, state))
+        ## Board and talon both has facedown
+        state.talon = ['[]']
+        self.assertTrue(solitaire_controller.Solitaire_controller.is_terminal(self, state))
+        ## Talon has a facedown
+        state.board = [[],[],[],[],[],[],[]]
+        self.assertTrue(solitaire_controller.Solitaire_controller.is_terminal(self, state))
+        ## No facedown in either board or talon
+        state.talon = []
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_terminal(self, state))
+
+    def test_BFS(self):
+        game = solitaire_controller.Solitaire_controller()
+        stock = ['[]']*24
+        talon = []
+        board = [['2S'], ['[]', 'QC'], ['[]', '[]', '4S'], ['[]', '[]', '[]', 'QH'], ['[]', '[]', '[]', '[]', '2S'], ['[]', '[]', '[]', '[]', '[]', '4H'], ['[]', '[]', '[]', '[]', '[]', '[]', '4S']]
+        foundations = [[],[],[],[]]
+        state = state_model.State_model(board,foundations,stock,talon)
+        strategy = BFS.BFS()
+        agent = Agent.Agent(game,strategy)
+        agent.find_moves(state)
+
+    def test_is_goal(self):
+        game = solitaire_controller.Solitaire_controller()
+        board = [[],[],[],[],[],[],[]]
+        stock = []
+        foundations = [[],[],[],[]]
+        talon = []
+        state = state_model.State_model(board,foundations,stock,talon)
+        ## If everything is empty - technically we should populate foundation, but this isn't checked in the method
+        self.assertTrue(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## Populate board, empty stock and empty talon
+        state.board = [[],['AH'],[],[],[],[],[]]
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## Populate board, populate stock and empty talon
+        state.stock = ['4D','8H','TC']
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## Populate everything
+        state.talon = ['2C']
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## Empty board, populate stock and populate talon
+        board = [[],[],[],[],[],[],[]]
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## Empty board, populate stock, and empty talon
+        state.talon = []
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
+        ## empty board, empty stock and populate talon
+        state.talon = ['2C']
+        stock = ['[]','[]','[]']
+        self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
