@@ -28,6 +28,9 @@ class Solitaire_controller():
         if self.draw_from_stock(state.stock, state.talon):
             action = Action_model()
             action.get_talon = True
+            if len(state.stock) > 0 and len(state.stock) + len(state.talon) == 3:
+                return [action]
+            
             actions.append(action)
 
         # Checks moves for every card in the tableau
