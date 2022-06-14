@@ -48,27 +48,27 @@ class Solitaire_controller():
     def Result(self, state: State_model, action: Action_model):
 
         temp_board = state.board.copy()
-        foundations = state.foundations.copy()
-        talon = state.talon.copy()
-        stock = state.stock.copy()
+        temp_foundations = state.foundations.copy()
+        temp_talon = state.talon.copy()
+        temp_stock = state.stock.copy()
 
         if action.get_talon:
-            if len(stock) >= 3:
-                talon = stock[-3:] + talon
-                stock = stock[:-3]
+            if len(temp_stock) >= 3:
+                temp_talon = temp_stock[-3:] + temp_talon
+                temp_stock = temp_stock[:-3]
                 # If we need to shuffle talon into stock
             else:
-                stock = talon + stock
-                talon = stock[-3:] + talon
+                temp_stock = temp_talon + temp_stock
+                temp_talon = []
 
-            new_state = State_model(temp_board, foundations, stock, talon)
+            new_state = State_model(temp_board, temp_foundations, temp_stock, temp_talon)
             new_state.action = action
             new_state.prev_state = state
             return new_state
 
         if action.from_row == -1:
             cards = [state.talon[0]]
-            talon.pop(0)
+            temp_talon.pop(0)
         else:
             cards = temp_board[action.from_row][action.card_index: None]
             temp_board[action.from_row] = temp_board[action.from_row][:(action.card_index-1)]
@@ -77,9 +77,9 @@ class Solitaire_controller():
            
             temp_board[action.to_row] = state.board[action.to_row] + cards
         else:
-            foundations[action.to_row % len(temp_board)] = state.foundations[action.to_row % len(temp_board)] + cards
+            temp_foundations[action.to_row % len(temp_board)] = state.foundations[action.to_row % len(temp_board)] + cards
 
-        new_state = State_model(temp_board, foundations, stock, talon)
+        new_state = State_model(temp_board, temp_foundations, temp_stock, temp_talon)
         new_state.action = action
         new_state.prev_state = state
         return new_state

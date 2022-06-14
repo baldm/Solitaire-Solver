@@ -62,7 +62,7 @@ class CardAnalyzer:
                     get_talon.append(False)
                     # Appending the card we move
                     if action.from_row == -1:
-                        card_move.append[temp_state.prev_state.talon[0]]
+                        card_move.append(temp_state.prev_state.talon[0])
                     else:
                         card_move.append(
                             temp_state.prev_state.board[action.from_row][action.card_index])
