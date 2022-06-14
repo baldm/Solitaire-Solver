@@ -22,26 +22,12 @@ class TestCard_analyzer(TestCase):
 
     def bugfix(self):
         analyzer = CardAnalyzer()
-        board = [['8D'], ['[]', '9D'], ['[]', '[]', 'JH'], ['[]', '[]', '[]', '6D'], ['[]', '[]', '[]', '[]', 'TH'], ['[]', '[]', '[]', '[]', '[]', '8C'], ['[]', '[]', '[]', '[]', '[]', '[]', '9S']]
+        board = [['6D','5S'], ['[]', '2S'], ['[]', '[]', 'AS'], ['[]', '[]', '[]', '2H'], ['[]', '[]', '[]', '[]', 'TD'], ['[]', '[]', '[]', '[]', '[]', '7C'], ['[]', '[]', '[]', '[]', '[]', '[]', 'TH']]
         analyzer.update_card(board)
+        analyzer.state.talon = []
+        analyzer.state.stock = ['[]']*23
         analyzer.get_next_moves()
-        analyzer.update_card(['QD'])
-        analyzer.get_next_moves()
-        analyzer.update_card(['3C'])
-        analyzer.get_next_moves()
-        analyzer.update_card(['QH'])
-        analyzer.get_next_moves()
-        analyzer.update_card(['JS'])
-        analyzer.get_next_moves()
-        analyzer.update_card(['4H'])
-        analyzer.get_next_moves()
-        analyzer.update_card(['2C'])
-        analyzer.get_next_moves()
-        analyzer.update_card(['5H'])
-        analyzer.get_next_moves()
-        analyzer.update_card(['AH'])
-        analyzer.get_next_moves()
-        a = 1
+
 
 
     def testEquals(self):

@@ -168,10 +168,10 @@ class Solitaire_controller():
         action : Action_model = state.action
 
         if action.get_talon:
-            return 1000
+            return 200
         else:
             if self.ace_to_foundation:
-                val += 200
+                val += 2000
 
             if action.from_row != -1:
                 val += 50
