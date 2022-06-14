@@ -53,7 +53,7 @@ async def upload_board_image(item: Image):
         # Removing temp file
         remove(save_path)
     except Exception as e:
-        endpoint_output = [{'move_from': '', 'move_card': '', 'move_to': '', 'get_talon': False}]
+        endpoint_output = [{'move_from': 'FEJL', 'move_card': str(e), 'move_to': 'FEJL', 'get_talon': False}]
         print(e)
 
     
