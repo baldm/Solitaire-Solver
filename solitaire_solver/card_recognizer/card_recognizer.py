@@ -448,30 +448,24 @@ class card_recognizer:
         __frame = cv2.imread(frame)
         output = []
         cards = card_recognizer.detect_cards(__frame)
-        if self.i <= 6:
-            print("here")
-            print(cards)
+        if self.saved_cards_array == []:
+            firts = False
+            i = 0
             for card in reversed(cards):
                 self.saved_cards_array.append([])
-                for j in range(0, self.i):
-                    self.saved_cards_array[self.i].append('[]')
-                self.saved_cards_array[self.i].append(
+                for j in range(0, i):
+                    self.saved_cards_array[i].append('[]')
+                self.saved_cards_array[i].append(
                     card_recognizer.make_string(card))
-                self.i += 1
-                print(self.saved_cards_array)
-                print(self.i)
-            if self.i == 7:    
-                output = self.saved_cards_array
+                i += 1
+            output = self.saved_cards_array
         else:
-            print("not here")
             for card in cards:
                 all_cards = []
                 card_str = card_recognizer.make_string(card)
-
                 for blocks in self.saved_cards_array:
                     for card in blocks:
                         all_cards.append(card)
-
                 if card_str not in all_cards:
                     output.append(card_str)
         return output
