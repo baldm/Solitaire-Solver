@@ -159,3 +159,6 @@ class TestSolitaire_controller(TestCase):
         state.talon = ['2C']
         stock = ['[]','[]','[]']
         self.assertFalse(solitaire_controller.Solitaire_controller.is_goal(self, state))
+
+
+    
