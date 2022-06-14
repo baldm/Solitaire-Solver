@@ -446,9 +446,18 @@ class card_recognizer:
 
     def recognize_cards(self, frame):
         __frame = cv2.imread(frame)
+
+        scale_percent = 50 # percent of original size
+        width = int(__frame.shape[1] * scale_percent / 100)
+        height = int(__frame.shape[0] * scale_percent / 100)
+        dim = (width, height)
+        __frame = cv2.resize(__frame,dim,interpolation = cv2.INTER_AREA)
+
         output = []
-        cards = card_recognizer.detect_cards(__frame)
+        
         if self.saved_cards_array == []:
+
+            cards = card_recognizer.detect_cards(__frame)
             firts = False
             i = 0
             for card in reversed(cards):
@@ -460,6 +469,13 @@ class card_recognizer:
                 i += 1
             output = self.saved_cards_array
         else:
+            scale_percent = 50 # percent of original size
+            width = int(__frame.shape[1] * scale_percent / 100)
+            height = int(__frame.shape[0] * scale_percent / 100)
+            dim = (width, height)
+            __frame = cv2.resize(__frame,dim,interpolation = cv2.INTER_AREA)
+            cards = card_recognizer.detect_cards(__frame)
+
             for card in cards:
                 all_cards = []
                 card_str = card_recognizer.make_string(card)
