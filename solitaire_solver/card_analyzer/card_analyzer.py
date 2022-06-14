@@ -28,7 +28,6 @@ class CardAnalyzer:
                     if row and row[-1] == '[]':
                         row[-1] = card
                         break
-            self.state.action = False
         else:
             stock = ['[]'] * 24
             talon = []
@@ -51,7 +50,7 @@ class CardAnalyzer:
             move_from = []
             get_talon = []
 
-            while temp_state.action != False:
+            while temp_state != temp_state.prev_state:
                 action: Action_model = temp_state.action
 
                 if action.get_talon:
@@ -64,10 +63,10 @@ class CardAnalyzer:
                     get_talon.append(False)
                     # Appending the card we move
                     if action.from_row == -1:
-                        card_move.append[temp_state.talon[0]]
+                        card_move.append[temp_state.prev_state.talon[0]]
                     else:
                         card_move.append(
-                            temp_state.board[action.from_row][action.card_index])
+                            temp_state.prev_state.board[action.from_row][action.card_index])
                     card_to.append(str(action.to_row))
                     move_from.append(str(action.from_row))
                 temp_state = temp_state.prev_state

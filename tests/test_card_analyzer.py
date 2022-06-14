@@ -17,3 +17,9 @@ class TestCard_analyzer(TestCase):
         analyzer.update_card(['TC'])
         analyzer.get_next_moves()
         analyzer.update_card(['9C'])
+
+    def bugfix(self):
+        analyzer = CardAnalyzer()
+        board = [['8D'], ['[]', '9D'], ['[]', '[]', 'JH'], ['[]', '[]', '[]', '6D'], ['[]', '[]', '[]', '[]', 'TH'], ['[]', '[]', '[]', '[]', '[]', '8C'], ['[]', '[]', '[]', '[]', '[]', '[]', '9S']]
+        analyzer.update_card(board)
+        analyzer.get_next_moves()

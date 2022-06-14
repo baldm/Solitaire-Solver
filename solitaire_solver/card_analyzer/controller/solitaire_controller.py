@@ -44,10 +44,10 @@ class Solitaire_controller():
 
     def Result(self, state: State_model, action: Action_model):
 
-        board = state.board
-        foundations = state.foundations
-        talon = state.talon
-        stock = state.stock
+        temp_board = state.board.copy()
+        foundations = state.foundations.copy()
+        talon = state.talon.copy()
+        stock = state.stock.copy()
 
         if action.get_talon:
             if len(stock) >= 3:
@@ -58,24 +58,27 @@ class Solitaire_controller():
                 stock = talon + stock
                 talon = stock[-3:] + talon
 
-            new_state = State_model(board, foundations, stock, talon)
+            new_state = State_model(temp_board, foundations, stock, talon)
             new_state.action = action
+            new_state.prev_state = state
             return new_state
 
         if action.from_row == -1:
             cards = [state.talon[0]]
             talon.pop(0)
         else:
-            cards = board[action.from_row][action.card_index-1: None]
-            board[action.from_row] = board[action.from_row][:action.card_index-1]
+            cards = temp_board[action.from_row][action.card_index: None]
+            temp_board[action.from_row] = temp_board[action.from_row][:(action.card_index-1)]
 
-        if action.to_row < len(board):
-            board[action.to_row] += cards
+        if action.to_row < len(temp_board):
+           
+            temp_board[action.to_row] = state.board[action.to_row] + cards
         else:
-            foundations[action.to_row % len(board)] += cards
+            foundations[action.to_row % len(temp_board)] = state.foundations[action.to_row % len(temp_board)] + cards
 
-        new_state = State_model(board, foundations, stock, talon)
+        new_state = State_model(temp_board, foundations, stock, talon)
         new_state.action = action
+        new_state.prev_state = state
         return new_state
 
     def is_move_legal(self, action: Action_model, state: State_model):
@@ -141,9 +144,9 @@ class Solitaire_controller():
 
     def is_terminal(self, state: State_model):
         for row in state.board:
-            if row and row[-1] == '[]':
+            if len(row) > 0 and row[-1] == '[]':
                 return True
-        if state.talon and state.talon[-1] == '[]':
+        if len(state.talon) > 0 and state.talon[-1] == '[]':
             return True
         return False
 

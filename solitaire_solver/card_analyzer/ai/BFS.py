@@ -42,12 +42,11 @@ class BFS():
         ##Generate all new states
         
         actions : list[Action_model] = game.Actions(state)
-
+        
     
         for action in actions:
             new_state = game.Result(state,action)
             if not self.exists(new_state):
-                new_state.prev_state = state
                 self.frontier.put(new_state)
                 self.expanded.append(new_state)
 

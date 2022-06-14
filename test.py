@@ -5,4 +5,4 @@ test = TestSolitaire_controller()
 test.test_BFS()
 
 test2 = TestCard_analyzer()
-test2.test()
+test2.bugfix()
