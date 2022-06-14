@@ -28,6 +28,7 @@ class CardAnalyzer:
                     if row and row[-1] == '[]':
                         row[-1] = card
                         break
+            self.state.action = False
         else:
             stock = ['[]'] * 24
             talon = []
@@ -50,7 +51,7 @@ class CardAnalyzer:
             move_from = []
             get_talon = []
 
-            while temp_state != temp_state.prev_state:
+            while temp_state.action != False:
                 action: Action_model = temp_state.action
 
                 if action.get_talon:
