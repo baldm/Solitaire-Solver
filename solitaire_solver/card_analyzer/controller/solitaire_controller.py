@@ -146,7 +146,7 @@ class Solitaire_controller():
         for row in state.board:
             if len(row) > 0 and row[-1] == '[]':
                 return True
-        if len(state.talon) > 0 and state.talon[-1] == '[]':
+        if len(state.talon) > 0 and state.talon[0] == '[]':
             return True
         return False
 
