@@ -74,7 +74,7 @@ class Solitaire_controller():
             if action.card_index == 0:
                 temp_board[action.from_row] = []
             else:
-                temp_board[action.from_row] = temp_board[action.from_row][:(action.card_index-1)]
+                temp_board[action.from_row] = temp_board[action.from_row][:(action.card_index)]
 
         if action.to_row < len(temp_board):
            
@@ -96,13 +96,14 @@ class Solitaire_controller():
             
         # if you move to foundations
         if action.to_row >= len(state.board):
-            to_row = state.foundations[action.to_row % len(state.board)]
-            if len(to_row) == 0:
-                if card[0] == 'A':
+            if action.from_row != -1 and state.board[action.from_row][-1] == card or action.from_row == -1:
+                to_row = state.foundations[action.to_row % len(state.board)]
+                if len(to_row) == 0:
+                    if card[0] == 'A':
+                        return True
+                        # todo add check if same type
+                elif self.descending_order( to_row[-1],card) and card[1] == to_row[-1][1]:
                     return True
-                    # todo add check if same type
-            elif self.descending_order(card, to_row[-1]) and card[1] == state.board[action.to_row % len(state.board)][-1][1]:
-                return True
             return False
 
         # Logic if moved to row on board
@@ -173,27 +174,26 @@ class Solitaire_controller():
         if action.get_talon:
             return 250
         else:
-            if self.ace_to_foundation:
-                val += 2000
+            
 
             if action.from_row != -1:
-                val += 50
+                val += 30
                 for card in state.board[action.from_row]:
                     if card == '[]':
-                        val += 5
+                        val += 10
             else:
-                val += 250
+                val += 0
 
             if action.to_row >= len(state.board):
                 val -= 1
 
         val += self.even_piles(state.board, 5) # if weight = 5, max 35
         val += self.even_piles(state.foundations, 10) # if weight = 10, max 40
-        val += self.same_symbols(state.board, 1) # if weight = 1, max 37
-        val += self.even_foundations(state.foundations,500)
+        val += self.same_symbols(state.board, 5) # if weight = 1, max 37
+        
 
         return val
-        
+                  
 
     def even_piles(self, lists, max_pts):
         val = 0
@@ -214,10 +214,10 @@ class Solitaire_controller():
         length = 0
         for foundation in foundations:
             if len(foundation) > length:
-                length = len(foundations)
+                length = len(foundation)
 
         for foundation in foundations:
-            if foundation != length or foundation != length-1:
+            if len(foundation) != length or len(foundation) != length-1:
                 return 0
             else:
                 return pts

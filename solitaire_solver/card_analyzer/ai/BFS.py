@@ -6,23 +6,25 @@ from ..model.action_model import Action_model
 
 class BFS():
     def __init__(self) -> None:
-        self.frontier : queue.Queue = queue.Queue()
+        self.frontier = []
         self.expanded = []
         self.leaves = []
-        self.foundation = []
+        
 
 
     def __call__(self, state : State_model, game : Solitaire_controller):
-        self.foundation = state.foundations
-        self.frontier.put(state)
-        while not self.frontier.empty():
-            currentState = self.frontier.get()
+        self.leaves = []
+        self.expanded = []
+        self.frontier = []
+
+        self.frontier.append(state)
+
+        while  len(self.frontier) > 0 and len(self.leaves) < 60 and len(self.frontier) < 500:
+            currentState = self.frontier[0]
+            self.frontier.pop(0)
             #Checks if the game is won
             if game.is_goal(currentState):
                 return currentState
-            #checks if a new photo is needed
-            elif game.is_terminal(currentState):
-                self.leaves.append(currentState)
             else:
                 self.expand(currentState, game)
         
@@ -35,9 +37,9 @@ class BFS():
                 if temp_val > best_val:
                     best_state = state
                     best_val = temp_val
-            self.leaves = []
+            
             return best_state
-    
+        
         return False
     
 
@@ -48,24 +50,79 @@ class BFS():
         
     
         for action in actions:
+           
+
             new_state = game.Result(state,action)
+            
             if not self.exists(new_state):
-                self.prune(new_state)
-                self.frontier.put(new_state)
                 self.expanded.append(new_state)
 
-    def prune(self,state : State_model):
-        if state.foundations != self.foundation:
-            length = len(state.foundations[0])
-            for foundation in state.foundations:
-                if len(foundation) != length:
-                    break
+                is_pruned = self.new_prune(new_state)
                 
+                if game.is_terminal(new_state):
+                    self.leaves.append(new_state)
+                else:
+
+                    self.frontier.append(new_state)
+
+                if is_pruned:
+                    break
+            
+                
+
+    def prune(self,state : State_model):
+        if state.foundations != state.prev_state.foundations:
+            length = 0
+            last_length = 0
+            for foundation in state.foundations:
+                if len(foundation) > length:
+                    length = len(foundation)
+            
+            for foundation in state.prev_state.foundations:
+                if len(foundation) > length:
+                    last_length = len(foundation)
+
+            new_number = 0
+            for foundation in state.foundations:
+                if len(foundation) == length or len(foundation) == (length -1) :
+                    break
+            
             else:
-                self.foundation = state.foundations
-                self.frontier.mutex.__init__()
+                self.frontier = []
+                self.expanded = []
+                self.leaves = []
+                
 
+    def new_prune(self, state : State_model):
+        length = 0
+        last_length = 0
 
+        for index,foundation in enumerate(state.foundations):
+            for foundation in state.foundations:
+                if len(foundation) > length:
+                    length = len(foundation)
+                if len(state.prev_state.foundations[index]) > last_length:
+                    last_length = len(state.prev_state.foundations[index])
+        
+        if length > last_length:
+            for foundation in state.foundations:
+                if len(foundation) != length and len(foundation) != (length -1) :
+                    break
+            
+            else:
+                self.frontier = []
+                self.expanded = []
+                self.leaves = []
+                return True
+        
+        else:
+            if state.action and not state.action.get_talon and state.action.to_row >= len(state.board):
+                self.frontier = []
+                self.expanded = []
+                self.leaves = []
+                return True
+
+        return False
 
 
     def exists(self,new_state : State_model):
