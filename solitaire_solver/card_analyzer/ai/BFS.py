@@ -36,7 +36,6 @@ class BFS():
                     best_state = state
                     best_val = temp_val
             self.leaves = []
-            self.expanded = []
             return best_state
     
         return False
