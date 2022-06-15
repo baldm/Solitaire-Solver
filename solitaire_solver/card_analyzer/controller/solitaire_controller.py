@@ -180,7 +180,7 @@ class Solitaire_controller():
                 val += 30
                 for card in state.board[action.from_row]:
                     if card == '[]':
-                        val += 10
+                        val += 20
             else:
                 val += 0
 
