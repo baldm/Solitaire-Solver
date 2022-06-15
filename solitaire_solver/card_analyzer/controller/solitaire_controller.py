@@ -71,7 +71,10 @@ class Solitaire_controller():
             temp_talon.pop(0)
         else:
             cards = temp_board[action.from_row][action.card_index: None]
-            temp_board[action.from_row] = temp_board[action.from_row][:(action.card_index-1)]
+            if action.card_index == 0:
+                temp_board[action.from_row] = []
+            else:
+                temp_board[action.from_row] = temp_board[action.from_row][:(action.card_index-1)]
 
         if action.to_row < len(temp_board):
            
@@ -168,7 +171,7 @@ class Solitaire_controller():
         action : Action_model = state.action
 
         if action.get_talon:
-            return 1000
+            return 250
         else:
             if self.ace_to_foundation:
                 val += 200
