@@ -187,6 +187,7 @@ class Solitaire_controller():
         val += self.even_piles(state.board, 5) # if weight = 5, max 35
         val += self.even_piles(state.foundations, 10) # if weight = 10, max 40
         val += self.same_symbols(state.board, 1) # if weight = 1, max 37
+        val += self.even_foundations(state.foundations,500)
 
         return val
         
@@ -206,6 +207,18 @@ class Solitaire_controller():
             return 0
 
         return val
+    def even_foundations(self, foundations, pts):
+        length = 0
+        for foundation in foundations:
+            if len(foundation) > length:
+                length = len(foundations)
+
+        for foundation in foundations:
+            if foundation != length or foundation != length-1:
+                return 0
+            else:
+                return pts
+
 
     def same_symbols(self, board, weight):
         val = 0

@@ -9,9 +9,11 @@ class BFS():
         self.frontier : queue.Queue = queue.Queue()
         self.expanded = []
         self.leaves = []
+        self.foundation = []
 
 
     def __call__(self, state : State_model, game : Solitaire_controller):
+        self.foundation = state.foundations
         self.frontier.put(state)
         while not self.frontier.empty():
             currentState = self.frontier.get()
@@ -49,13 +51,29 @@ class BFS():
         for action in actions:
             new_state = game.Result(state,action)
             if not self.exists(new_state):
+                self.prune(new_state)
                 self.frontier.put(new_state)
                 self.expanded.append(new_state)
 
-            
+    def prune(self,state : State_model):
+        if state.foundations != self.foundation:
+            length = len(state.foundations[0])
+            for foundation in state.foundations:
+                if len(foundation) != length:
+                    break
+                
+            else:
+                self.foundation = state.foundations
+                self.frontier.mutex.__init__()
+
+
+
 
     def exists(self,new_state : State_model):
         for state in self.expanded:
                 if state.equals(new_state):
                     return True 
+        for state in self.leaves:
+            if state.board == new_state.board:
+                return True        
         return False

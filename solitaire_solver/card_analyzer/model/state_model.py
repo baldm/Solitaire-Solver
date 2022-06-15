@@ -11,7 +11,7 @@ class State_model():
         self.talon = talon
 
     def equals(self,state : 'State_model'):
-        if self.board == state.board and self.foundations == state.foundations and self.talon == state.talon and self.stock == state.stock:
+        if self.board == state.board and self.talon == state.talon:
             return True
         return False
 
