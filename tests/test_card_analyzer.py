@@ -25,6 +25,7 @@ class TestCard_analyzer(TestCase):
         board = [['8D'], ['[]', '9D'], ['[]', '[]', 'JH'], ['[]', '[]', '[]', '6D'], ['[]', '[]', '[]', '[]', 'TH'], ['[]', '[]', '[]', '[]', '[]', '8C'], ['[]', '[]', '[]', '[]', '[]', '[]', '9S']]
         analyzer.update_card(board)
         analyzer.get_next_moves()
+<<<<<<< Updated upstream
         analyzer.update_card(['QD'])
         analyzer.get_next_moves()
         analyzer.update_card(['3C'])
@@ -44,6 +45,15 @@ class TestCard_analyzer(TestCase):
         a = 1
 
 
+=======
+        board = [['5H','4S','3H'],['[]','QH','JS'],['[]','[]','2H'],['[]','[]','AS'],['[]','[]','[]','6D'],['[]','[]','[]','[]','[]','KH'],['[]','[]','[]','[]','TS','9D']]
+        analyzer.update_card(board)
+        analyzer.get_next_moves()
+
+        board = [['KH'],['[]','TH','9C','8D'],['[]','[]','TD'],['[]', '[]','4C','3H'],['[]','[]','[]','2H'],['[]','[]','[]','[]','5H'],['[]','[]','[]','[]','[]','[]','JS']]
+        analyzer.update_card(board)
+        analyzer.get_next_moves()
+>>>>>>> Stashed changes
     def testEquals(self):
         game = Solitaire_controller()
         stock = ['[]'] * 24
