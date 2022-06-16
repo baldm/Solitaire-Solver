@@ -25,7 +25,7 @@ class BFS():
 
         self.frontier.append(state)
         
-        while  len(self.frontier) > 0 and len(self.leaves) < 120 and len(self.frontier) < 1000:
+        while  len(self.frontier) > 0:
             currentState = self.frontier[0]
             self.frontier.pop(0)
             #Checks if the game is won
@@ -34,6 +34,8 @@ class BFS():
             else:
                 self.expand(currentState, game)
         
+        if len(self.frontier) > 0:
+            print('frontier not empty')
         ##Make Heuristic on leaves and return best state
         if self.leaves:
             best_state = self.leaves[0]
@@ -53,29 +55,37 @@ class BFS():
         ##Generate all new states
         
         actions : list[Action_model] = game.Actions(state)
-        
+        temp_frontier = []
     
         for action in actions:
            
-
             new_state = game.Result(state,action)
             
-
-            if not (self.exists(new_state) or (self.talon_exist(new_state) and action.get_talon)):
+            if not (self.exists(new_state) or (self.talon_exist(new_state) and action.get_talon) or self.is_redundant(new_state,game) ):
                 self.expanded.append(new_state)
                 if not self.talon_exist(new_state):
-                    self.talons.append(new_state.talon)
+                    self.talons.append([new_state.talon,new_state.foundations])
 
                 is_pruned = self.new_prune(new_state)
-                
-                if game.is_terminal(new_state):
+
+                if game.is_goal(new_state):
+                    self.frontier = [new_state]
+                    temp_frontier = []
+                    break
+                elif game.is_terminal(new_state):
                     self.leaves.append(new_state)
+                    if is_pruned:
+                        temp_frontier = []
+                        break
                 else:
-                    self.frontier.append(new_state)
+                    temp_frontier.append(new_state)
 
                 if is_pruned:
+                    temp_frontier = [new_state]
                     break
-            
+                
+
+        self.frontier += temp_frontier
                 
 
     def prune(self,state : State_model):
@@ -101,10 +111,34 @@ class BFS():
                 self.leaves = []
                 
 
+    def is_redundant(self,state : State_model, game : Solitaire_controller):
+        if state.prev_state != state:
+            action = state.action
+            if not action.get_talon and action.from_row != -1:
+                if action.to_row < len(state.board):
+                    to_row = state.prev_state.board[action.to_row]
+                else:
+                    return False
+                    
+                from_row = state.prev_state.board[action.from_row]
+                card = state.prev_state.board[action.from_row][action.card_index]
+                if action.card_index != 0 and len(to_row) > 0:
+                    if from_row[action.card_index-1][0] == to_row[-1][0]:
+                        if game.same_symbols(from_row,10) > game.same_symbols(state.board[action.to_row],10):
+                            return True
+                elif action.card_index == 0 and len(to_row) == 0:
+                    return True
+                    
+
+        return False
+
     def new_prune(self, state : State_model):
         length = 0
         last_length = 0
-
+        if state.action and not state.action.get_talon:
+            if state.action.from_row < len(state.board):
+                if state.action.card_index != 0 and state.board[state.action.from_row][-1] == '[]':
+                    return False
         for index,foundation in enumerate(state.foundations):
             for foundation in state.foundations:
                 if len(foundation) > length:
@@ -118,25 +152,18 @@ class BFS():
                     break
             
             else:
-                self.frontier = []
-                self.expanded = []
-                self.leaves = []
-                self.talons = []
                 return True
         
         else:
             if state.action and not state.action.get_talon and state.action.to_row >= len(state.board):
-                self.frontier = []
-                self.expanded = []
-                self.leaves = []
-                self.talons = []
+                
                 return True
 
         return False
 
     def talon_exist(self, new_state : State_model):
-        for talon in self.talons:
-            if talon == new_state.talon:
+        for pair in self.talons:
+            if pair[0] == new_state.talon and pair[1] == new_state.foundations:
                 return True
         return False
 
