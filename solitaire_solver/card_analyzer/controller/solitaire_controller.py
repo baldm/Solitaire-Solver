@@ -212,16 +212,18 @@ class Solitaire_controller():
 
         return val
     def even_foundations(self, foundations, pts):
+        val = pts
         length = 0
         for foundation in foundations:
             if len(foundation) > length:
                 length = len(foundation)
-
+        if length == 0:
+            return 0
         for foundation in foundations:
-            if len(foundation) != length or len(foundation) != length-1:
-                return 0
-            else:
-                return pts
+            if len(foundation) != length and len(foundation) != length-1:
+                val -= (int(pts/4)+ abs(len(foundation)- length)*3)
+            
+        return val
 
 
     def same_symbols(self, board, weight):
