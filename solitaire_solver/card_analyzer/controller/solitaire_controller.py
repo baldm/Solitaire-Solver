@@ -9,6 +9,16 @@ class Solitaire_controller():
                 '7', '8', '9', 'T', 'J', 'Q', 'K']
         self.order = dict(zip(keys, values))
 
+        self.val_even_board = 5
+        self.val_same_symbols = 10
+        self.val_even_foundations = 200
+        self.val_get_talon = 250
+        self.val_unkown_cards_in_row = 0
+        self.val_almost_even_foundation = 5
+        self.val_move_to_foundation = 0
+        self.val_move_from_talon = 0
+        self.val_move_from_board = 0
+
     def Actions(self, state: State_model):
         # returns list of actions which is possible in given state
         actions = []
@@ -168,29 +178,32 @@ class Solitaire_controller():
     def eval(self,state : State_model):
 
         val = 0
+        
+        
 
         action : Action_model = state.action
 
         if action.get_talon:
-            return 250
+            return self.val_get_talon
         else:
             
 
             if action.from_row != -1:
-                val += 0
+                val += self.val_move_from_board
                 for card in state.board[action.from_row]:
                     if card == '[]':
-                        val -= 0
+                        val += self.val_unkown_cards_in_row
             else:
-                val += 0
+                val += self.val_move_from_talon
 
             if action.to_row >= len(state.board):
-                val -= 0
+                val -= self.val_move_to_foundation
+        
 
-        val += self.even_piles(state.board, 5) # if weight = 5, max 35
-        val += self.even_piles(state.foundations, 10) # if weight = 10, max 40
-        val += self.same_symbols(state.board, 5) # if weight = 1, max 37
-        val += self.even_foundations(state.foundations, 100)
+        val += self.even_piles(state.board, self.val_even_board) # if weight = 5, max 35
+        val += self.same_symbols(state.board, self.val_same_symbols) # if weight = 1, max 37
+        val += self.even_piles(state.foundations, self.val_almost_even_foundation)
+        val += self.even_foundations(state.foundations, self.val_even_foundations)
         
         
 
