@@ -180,7 +180,7 @@ class Solitaire_controller():
                 val += 0
                 for card in state.board[action.from_row]:
                     if card == '[]':
-                        val += 0
+                        val -= 0
             else:
                 val += 0
 
@@ -191,6 +191,7 @@ class Solitaire_controller():
         val += self.even_piles(state.foundations, 10) # if weight = 10, max 40
         val += self.same_symbols(state.board, 5) # if weight = 1, max 37
         val += self.even_foundations(state.foundations, 100)
+        
         
 
         return val
@@ -222,8 +223,19 @@ class Solitaire_controller():
         for foundation in foundations:
             if len(foundation) != length and len(foundation) != length-1:
                 val -= (int(pts/4)+ abs(len(foundation)- length)*3)
-            
-        return val
+        if val != pts:
+            return val
+        return val * length
+
+    def empty_stock_before_row(self, state : State_model, multiplier):
+        length = len(state.stock) + len(state.talon)
+        if length > 0:
+            val = 0
+            for row in state.board:
+                if len(row) == 0:
+                    val += length * multiplier
+            return -val
+        return 0
 
 
     def same_symbols(self, board, weight):

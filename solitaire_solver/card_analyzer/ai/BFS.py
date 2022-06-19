@@ -1,4 +1,5 @@
 
+from os import stat
 from ..model.state_model import State_model
 from ..controller.solitaire_controller import Solitaire_controller
 from ..model.action_model import Action_model
@@ -9,7 +10,7 @@ class BFS():
         self.frontier = []
         self.expanded = []
         self.leaves = []
-        self.got_talon = False
+        
         self.talons = []
         
         
@@ -19,14 +20,17 @@ class BFS():
         self.leaves = []
         self.expanded = []
         self.frontier = []
-        self.got_talon = False
+        
         self.talons = []
         
 
         self.frontier.append(state)
         
         while  len(self.frontier) > 0:
+            if len(self.leaves) > 500:
+                break
             currentState = self.frontier[0]
+            
             self.frontier.pop(0)
             #Checks if the game is won
             if game.is_goal(currentState):
@@ -56,17 +60,17 @@ class BFS():
         
         actions : list[Action_model] = game.Actions(state)
         temp_frontier = []
-    
+        
         for action in actions:
-           
+
             new_state = game.Result(state,action)
             
             if not (self.exists(new_state) or (self.talon_exist(new_state) and action.get_talon) or self.is_redundant(new_state,game) ):
                 self.expanded.append(new_state)
                 if not self.talon_exist(new_state):
-                    self.talons.append([new_state.talon,new_state.foundations])
+                    self.talons.append([new_state.talon,new_state.stock])
 
-                is_pruned = self.new_prune(new_state)
+                is_pruned = self.new_prune(new_state, game)
 
                 if game.is_goal(new_state):
                     self.frontier = [new_state]
@@ -78,7 +82,7 @@ class BFS():
                         temp_frontier = []
                         break
                 else:
-                    temp_frontier.append(new_state)
+                        temp_frontier.append(new_state)
 
                 if is_pruned:
                     temp_frontier = [new_state]
@@ -88,32 +92,25 @@ class BFS():
         self.frontier += temp_frontier
                 
 
-    def prune(self,state : State_model):
-        if state.foundations != state.prev_state.foundations:
-            length = 0
-            last_length = 0
-            for foundation in state.foundations:
-                if len(foundation) > length:
-                    length = len(foundation)
-            
-            for foundation in state.prev_state.foundations:
-                if len(foundation) > length:
-                    last_length = len(foundation)
 
-            new_number = 0
-            for foundation in state.foundations:
-                if len(foundation) == length or len(foundation) == (length -1) :
-                    break
-            
-            else:
-                self.frontier = []
-                self.expanded = []
-                self.leaves = []
-                
 
     def is_redundant(self,state : State_model, game : Solitaire_controller):
+
+
+
         if state.prev_state != state:
             action = state.action
+            
+
+            if state.prev_state != state.prev_state.prev_state and not state.prev_state.action.get_talon:
+                prev_action = state.prev_state.action
+
+                if prev_action.from_row == -1 and state.foundations != state.prev_state.foundations:
+
+                    if not action.get_talon or (action.from_row != -1 and action.to_row < len(state.board)) :
+                        return True
+
+
             if not action.get_talon and action.from_row != -1:
                 if action.to_row < len(state.board):
                     to_row = state.prev_state.board[action.to_row]
@@ -121,21 +118,63 @@ class BFS():
                     return False
                     
                 from_row = state.prev_state.board[action.from_row]
-                card = state.prev_state.board[action.from_row][action.card_index]
+                card = from_row[action.card_index]
                 if action.card_index != 0 and len(to_row) > 0:
                     if from_row[action.card_index-1][0] == to_row[-1][0]:
                         if game.same_symbols(from_row,10) > game.same_symbols(state.board[action.to_row],10):
                             return True
-                elif action.card_index == 0 and len(to_row) == 0:
-                    return True
+                elif action.card_index == 0:
+                    if len(to_row) == 0:
+                        return True
+                    else:
+                        empty_rows = 0
+                        kings = 0
+                        king_in_talon = False
+
+                        for row in state.board:
+                            if row and row[0][0] == 'K':
+                                kings += 1
+                            elif len(row) == 0:
+                                empty_rows += 1
+
+                            
+                        if game.draw_from_stock(state.stock,state.talon):
+                            temp_action = Action_model()
+                            temp_action.get_talon = True
+                            temp_state = game.Result(state,temp_action)
+                            
+                            while temp_state.talon != state.talon:
+                                if len(temp_state.talon) > 0 and len(state.talon) > 0 and temp_state.talon[0] == state.talon[0]:
+                                    break
+                                if len(temp_state.talon) > 0 and temp_state.talon[0][0] == 'K':
+                                    king_in_talon = True
+                                    break
+                                temp_state = game.Result(temp_state,temp_action)
+                                
+                        
+                        
+                        if kings == 4 or king_in_talon and empty_rows == 0:
+                            return True
+                    
+                
                     
 
         return False
 
-    def new_prune(self, state : State_model):
+    def new_prune(self, state : State_model, game : Solitaire_controller):
+
         length = 0
-        last_length = 0
+        last_length = 0    
         if state.action and not state.action.get_talon:
+
+            if self.no_unkowns(state):
+                if state.action.to_row >= len(state.board):
+                    return True
+
+            if game.is_terminal(state):
+                if state.action.from_row != -1 and state.action.to_row < len(state.board):
+                    return True
+
             if state.action.from_row < len(state.board):
                 if state.action.card_index != 0 and state.board[state.action.from_row][-1] == '[]':
                     return False
@@ -163,7 +202,7 @@ class BFS():
 
     def talon_exist(self, new_state : State_model):
         for pair in self.talons:
-            if pair[0] == new_state.talon and pair[1] == new_state.foundations:
+            if pair[0] == new_state.talon and pair[1] == new_state.stock:
                 return True
         return False
 
@@ -182,16 +221,29 @@ class BFS():
                     return True
         return False
              
+    def no_unkowns(self,state:State_model):
+        for row in state.board:
+            for card in row:
+                if card == '[]':
+                    return False
         
+        for card in state.stock:
+            if card == '[]':
+                    return False
+        
+        for card in state.talon:
+             if card == '[]':
+                    return False
 
+        return True
+
+    
+        
 
 
 
     def exists(self,new_state : State_model):
         for state in self.expanded:
                 if state.equals(new_state):
-                    return True 
-        for state in self.leaves:
-            if state.board == new_state.board:
-                return True        
+                    return True         
         return False
