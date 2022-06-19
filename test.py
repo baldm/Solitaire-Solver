@@ -6,4 +6,5 @@ test = TestSolitaire_controller()
 
 test2 = TestCard_analyzer()
 #test2.testEquals()
-test2.testGame()
+#test2.testGame()
+print(test2.testOneGame())
