@@ -135,3 +135,6 @@ dmypy.json
 idea/
 **/.idea/workspace.xml 
 **/.idea/tasks.xml 
+
+# Stupid mac file
+*.DS_Store
