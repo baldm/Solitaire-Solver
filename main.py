@@ -35,7 +35,7 @@ class Image(BaseModel):
 async def upload_board_image(item: Image):
 
     # Get path where image will be saved
-    save_path = join(getcwd(), 'images', 'filename.png')
+    save_path = join(getcwd(), 'images', 'temp_images', 'filename.png')
 
     # Decode image from base64
     decoded_image = base64.b64decode(item.image_string)

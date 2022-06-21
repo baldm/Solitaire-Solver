@@ -423,12 +423,14 @@ class card_recognizer:
 
     @staticmethod
     def detect_cards(frame):
+        king_cards_path = 'images/master_images/'
+
         cards = []
         for i, contour in enumerate(card_recognizer.detect_card(frame)):
             temp = card_recognizer.crop_image(frame, contour)
             #best_rank_match_name, best_suit_match_name, best_rank_match_diff, best_suit_match_diff
             temp.best_rank_match, temp.best_suit_match, temp.rank_diff, temp.suit_diff = card_recognizer.match_card(
-                temp, card_recognizer.load_ranks("cardDetector/King/"), card_recognizer.load_suits("cardDetector/King/"))
+                temp, card_recognizer.load_ranks(king_cards_path), card_recognizer.load_suits(king_cards_path))
             if temp.best_rank_match != "Unknown" and temp.best_suit_match != "Unknown":
                 cards.append(temp)
 
@@ -442,19 +444,17 @@ class card_recognizer:
 
         return card_number + card_name
 
-
-
     def recognize_cards(self, frame):
         __frame = cv2.imread(frame)
 
-        scale_percent = 50 # percent of original size
+        scale_percent = 50  # percent of original size
         width = int(__frame.shape[1] * scale_percent / 100)
         height = int(__frame.shape[0] * scale_percent / 100)
         dim = (width, height)
-        __frame = cv2.resize(__frame,dim,interpolation = cv2.INTER_AREA)
+        __frame = cv2.resize(__frame, dim, interpolation=cv2.INTER_AREA)
 
         output = []
-        
+
         if self.saved_cards_array == []:
 
             cards = card_recognizer.detect_cards(__frame)
@@ -469,11 +469,11 @@ class card_recognizer:
                 i += 1
             output = self.saved_cards_array
         else:
-            scale_percent = 50 # percent of original size
+            scale_percent = 50  # percent of original size
             width = int(__frame.shape[1] * scale_percent / 100)
             height = int(__frame.shape[0] * scale_percent / 100)
             dim = (width, height)
-            __frame = cv2.resize(__frame,dim,interpolation = cv2.INTER_AREA)
+            __frame = cv2.resize(__frame, dim, interpolation=cv2.INTER_AREA)
             cards = card_recognizer.detect_cards(__frame)
 
             for card in cards:
