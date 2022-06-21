@@ -6,8 +6,9 @@ import numpy as np
 
 # detect the card that is in the frame and returns the card to the user
 
+# inspired by https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L45
 
- #inspired by https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L45
+
 class card:
     save_cards_array = []
     # structure for card and card type
@@ -39,7 +40,7 @@ class card_recognizer:
         self.saved_cards_array = []
         self.i = 0
 
-     #inspired by https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+     # inspired by https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
     @staticmethod
     def detect_card(frame):
         # convert the frame to grayscale
@@ -108,9 +109,9 @@ class card_recognizer:
 
         return result
 
+    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+    # noting modified from the original code
 
-    #sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
-    #noting modified from the original code
     @staticmethod
     def flattener(image, pts, w, h):
         """Flattens an image of a card into a top-down 200x300 perspective.
@@ -183,12 +184,12 @@ class card_recognizer:
 
     # used to crip all the cards in the frame and return them to the user
 
-     #sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+     # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
     @staticmethod
     def crop_image(_frame, contour):
-        
-        #start of our own code
-        
+
+        # start of our own code
+
         # creates class for card
         tempcard = card()
         tempcard.contour = contour
@@ -205,16 +206,15 @@ class card_recognizer:
         # finds center of card
         tempcard.find_center()
 
-        #start of copyed code 
+        # start of copyed code
 
-        #straightens the card and flattens it into a 200x300 image for processing
+        # straightens the card and flattens it into a 200x300 image for processing
         tempcard.warp = card_recognizer.flattener(
             _frame, tempcard.corner_pts, tempcard.w, tempcard.h)
-        
-        
+
         CORNER_WIDTH = 32
         CORNER_HEIGHT = 84
-        #modified to use all 4 corners of the card
+        # modified to use all 4 corners of the card
         Qcorner1 = tempcard.warp[0:CORNER_HEIGHT, 0:CORNER_WIDTH]
         Qcorner2 = tempcard.warp[0:CORNER_HEIGHT, 200-CORNER_WIDTH:200]
         Qcorner3 = cv2.rotate(
@@ -223,7 +223,7 @@ class card_recognizer:
             tempcard.warp[300-CORNER_HEIGHT:300, 0:CORNER_WIDTH], cv2.ROTATE_180)
         Qcards = [Qcorner1, Qcorner2, Qcorner3, Qcorner4]
         i = 0
-        #modified to use all 4 corners of the card with the new Qcards list
+        # modified to use all 4 corners of the card with the new Qcards list
         for Qcorner in Qcards:
 
             Qcorner_zoom = cv2.resize(Qcorner, (0, 0), fx=4, fy=4)
@@ -257,7 +257,7 @@ class card_recognizer:
                 Qrank_roi = Qrank[y1:y1+h1, x1:x1+w1]
                 Qrank_sized = cv2.resize(
                     Qrank_roi, (RANK_WIDTH, RANK_HEIGHT), 0, 0)
-                #modified to append to hold all 4 corners of the card
+                # modified to append to hold all 4 corners of the card
                 tempcard.rank_img.append(Qrank_sized)
 
             # Find suit contour and bounding rectangle, isolate and find largest contour
@@ -274,14 +274,14 @@ class card_recognizer:
                 Qsuit_roi = Qsuit[y2:y2+h2, x2:x2+w2]
                 Qsuit_sized = cv2.resize(
                     Qsuit_roi, (SUIT_WIDTH, SUIT_HEIGHT), 0, 0)
-                #modified to append to hold all 4 corners of the card
+                # modified to append to hold all 4 corners of the card
                 tempcard.suit_img.append(Qsuit_sized)
             i += 1
 
         return tempcard
 
+    #not used
 
-    #not used 
     @staticmethod
     def card_type(frame):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -302,7 +302,7 @@ class card_recognizer:
 
         return card2_contour
 
-    #sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
     @staticmethod
     def match_card(qCard, train_ranks, train_suits):
         """Finds best rank and suit matches for the query card. Differences
@@ -322,8 +322,8 @@ class card_recognizer:
 
             # Difference the query card rank image from each of the train rank images,
             # and store the result with the least difference
-            
-            #modified to use 4 pictures insted of 1 
+
+            # modified to use 4 pictures insted of 1
             for rank_img in qCard.rank_img:
                 for Trank in train_ranks:
                     diff_img = cv2.absdiff(rank_img, Trank.img)
@@ -361,7 +361,7 @@ class card_recognizer:
         # Return the identiy of the card and the quality of the suit and rank match
         return best_rank_match_name, best_suit_match_name, best_rank_match_diff, best_suit_match_diff
 
-    #sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
     class Train_suits:
         """Structure to store information about train suit images."""
 
@@ -369,7 +369,7 @@ class card_recognizer:
             self.img = []  # Thresholded, sized suit image loaded from hard drive
             self.name = "Placeholder"
 
-    #sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
     class Train_ranks:
         """Structure to store information about train rank images."""
 
@@ -377,7 +377,7 @@ class card_recognizer:
             self.img = []  # Thresholded, sized rank image loaded from hard drive
             self.name = "Placeholder"
 
-    #sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
     @staticmethod
     def load_ranks(filepath):
         """Loads rank images from directory specified by filepath. Stores
@@ -386,10 +386,10 @@ class card_recognizer:
         train_ranks = []
         i = 0
 
-        #modified to make naming easy 
+        # modified to make naming easy
         for Rank in ['A', '2', '3', '4', '5', '6', '7',
                      '8', '9', 'T', 'J', 'Q', 'K']:
-            #modiefied to use a object 
+            # modiefied to use a object
             train_ranks.append(card_recognizer.Train_ranks())
             train_ranks[i].name = Rank
             filename = Rank + '.jpg'
@@ -399,7 +399,7 @@ class card_recognizer:
 
         return train_ranks
 
-    #sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
     @staticmethod
     def load_suits(filepath):
         """Loads suit images from directory specified by filepath. Stores
@@ -408,9 +408,9 @@ class card_recognizer:
         train_suits = []
         i = 0
 
-        #modified to make naming easy 
+        # modified to make naming easy
         for Suit in ['S', 'D', 'C', 'H']:
-            #modiefied to use a object 
+            # modiefied to use a object
             train_suits.append(card_recognizer.Train_suits())
             train_suits[i].name = Suit
             filename = Suit + '.jpg'
@@ -422,11 +422,13 @@ class card_recognizer:
 
     @staticmethod
     def detect_cards(frame):
+        king_cards_path = 'images/master_images/'
+
         cards = []
         for i, contour in enumerate(card_recognizer.detect_card(frame)):
             temp = card_recognizer.crop_image(frame, contour)
             temp.best_rank_match, temp.best_suit_match, temp.rank_diff, temp.suit_diff = card_recognizer.match_card(
-                temp, card_recognizer.load_ranks("cardDetector/King/"), card_recognizer.load_suits("cardDetector/King/"))
+                temp, card_recognizer.load_ranks(king_cards_path), card_recognizer.load_suits(king_cards_path))
             if temp.best_rank_match != "Unknown" and temp.best_suit_match != "Unknown":
                 cards.append(temp)
 
@@ -440,19 +442,19 @@ class card_recognizer:
 
         return card_number + card_name
 
+    # functions returns a list of cards that is reconised and if the card is new
 
-    #functions returns a list of cards that is reconised and if the card is new 
     def recognize_cards(self, frame):
         __frame = cv2.imread(frame)
 
-        scale_percent = 50 # percent of original size
+        scale_percent = 50  # percent of original size
         width = int(__frame.shape[1] * scale_percent / 100)
         height = int(__frame.shape[0] * scale_percent / 100)
         dim = (width, height)
-        __frame = cv2.resize(__frame,dim,interpolation = cv2.INTER_AREA)
+        __frame = cv2.resize(__frame, dim, interpolation=cv2.INTER_AREA)
 
         output = []
-        
+
         if self.saved_cards_array == []:
 
             cards = card_recognizer.detect_cards(__frame)
@@ -467,11 +469,11 @@ class card_recognizer:
                 i += 1
             output = self.saved_cards_array
         else:
-            scale_percent = 50 # percent of original size
+            scale_percent = 50  # percent of original size
             width = int(__frame.shape[1] * scale_percent / 100)
             height = int(__frame.shape[0] * scale_percent / 100)
             dim = (width, height)
-            __frame = cv2.resize(__frame,dim,interpolation = cv2.INTER_AREA)
+            __frame = cv2.resize(__frame, dim, interpolation=cv2.INTER_AREA)
             cards = card_recognizer.detect_cards(__frame)
 
             for card in cards:

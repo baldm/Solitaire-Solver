@@ -34,28 +34,23 @@ class Image(BaseModel):
 @app.post("/analyze_image")
 async def upload_board_image(item: Image):
 
-    # PROCESS IMAGE HERE:
-    # sleep here to demonstrate processing image
-    try:
-        # Get path where image will be saved
-        save_path = join(getcwd(), 'images', 'filename.png')
+    # Get path where image will be saved
+    save_path = join(getcwd(), 'images', 'temp_images', 'filename.png')
 
-        # Decode image from base64
-        decoded_image = base64.b64decode(item.image_string)
+    # Decode image from base64
+    decoded_image = base64.b64decode(item.image_string)
 
-        # Save image to drive
-        with open(save_path, 'wb') as file:
-            file.write(decoded_image)
+    # Save image to drive
+    with open(save_path, 'wb') as file:
+        file.write(decoded_image)
 
+    endpoint_output = process_and_analyze_image(save_path)
 
-        endpoint_output = process_and_analyze_image(save_path)
-        
-        # Removing temp file
-        remove(save_path)
-    except Exception as e:
-        endpoint_output = [{'move_from': 'FEJL', 'move_card': str(e), 'move_to': 'FEJL', 'get_talon': False}]
-        print(e)
+    if not endpoint_output:
+        endpoint_output = [
+            {'move_from': 'FEJL', 'move_card': "No cards found", 'move_to': 'FEJL', 'get_talon': False}]
 
-    
+    # Removing temp file
+    remove(save_path)
 
     return endpoint_output
