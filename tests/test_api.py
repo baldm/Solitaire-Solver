@@ -11,7 +11,11 @@ class TestApi(unittest.TestCase):
         timeout = 5
 
         # Send simple request to check if there is a connection to the backend
-        response = requests.get(url, timeout=timeout)
+        try:
+            response = requests.get(url, timeout=timeout)
+        except requests.exceptions.ConnectionError as e:
+            print("[WARN] Test cannot run. There is no connection to the backend.")
+
         self.assertIsNotNone(response)
 
     def test_post_image(self):
@@ -25,7 +29,11 @@ class TestApi(unittest.TestCase):
             body = {'image_string': encoded_string.decode()}
 
             # Send request and parse response
-            response = requests.post(url, json=body)
+            try:
+                response = requests.post(url, json=body)
+            except requests.exceptions.ConnectionError as e:
+                print(
+                    "[WARN] Test cannot run. There is no connection to the backend.")
             self.assertTrue(response.status_code == 200)
 
 
