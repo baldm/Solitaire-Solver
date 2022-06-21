@@ -210,8 +210,8 @@ class Solitaire_controller():
                 val -= self.val_move_to_foundation
         
 
-        val += self.even_piles(state.board, self.val_even_board) # if weight = 5, max 35
-        val += self.same_symbols(state.board, self.val_same_symbols) # if weight = 1, max 37
+        val += self.even_piles(state.board, self.val_even_board) 
+        val += self.same_symbols(state.board, self.val_same_symbols) 
         val += self.even_piles(state.foundations, self.val_almost_even_foundation)
         val += self.even_foundations(state.foundations, self.val_even_foundations)
         val += self.cards_in_stock(state,self.val_cards_in_stock)

@@ -13,12 +13,6 @@ class CardAnalyzer:
         self.agent = Agent(self.game, self.strategy)
         self.state = None
 
-        # TODO: Her kan i implementer de objecter i skal bruge til det
-
-    def _goes_here(self):
-        # TODO: her kan i implentere hjælpe funktioner til at finde næste move
-        pass
-
     def update_card(self, card):
         if len(card) == 1:
             if self.state.action.get_talon or self.state.action.from_row == -1 :
@@ -84,7 +78,7 @@ class CardAnalyzer:
                 )
             return output
         else:
-            return {'move_from': '', 'move_card': '', 'move_to': '', 'reg_card': '', 'get_talon': False, 'game_over': True}
+            return False
 
         # make list of moves and return them
 

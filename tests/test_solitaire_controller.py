@@ -1,5 +1,4 @@
-
-from unittest import TestCase
+import unittest
 
 from solitaire_solver.card_analyzer.controller import solitaire_controller
 from solitaire_solver.card_analyzer.ai import Agent,BFS
@@ -7,7 +6,7 @@ from solitaire_solver.card_analyzer.model import action_model,state_model
 
 
 
-class TestSolitaire_controller(TestCase):
+class TestSolitaire_controller(unittest.TestCase):
     ## Tests all combinations of colors being moved
     def test_alternating_color(self):
         card_diamond = "3D"

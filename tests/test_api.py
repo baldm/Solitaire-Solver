@@ -15,6 +15,7 @@ class TestApi(unittest.TestCase):
             response = requests.get(url, timeout=timeout)
         except requests.exceptions.ConnectionError as e:
             print("[WARN] Test cannot run. There is no connection to the backend.")
+            return
 
         self.assertIsNotNone(response)
 
@@ -34,6 +35,7 @@ class TestApi(unittest.TestCase):
             except requests.exceptions.ConnectionError as e:
                 print(
                     "[WARN] Test cannot run. There is no connection to the backend.")
+                return
             self.assertTrue(response.status_code == 200)
 
 

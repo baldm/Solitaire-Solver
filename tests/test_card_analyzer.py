@@ -1,13 +1,14 @@
-from unittest import TestCase
-
+import unittest
 
 from solitaire_solver.card_analyzer.card_analyzer import CardAnalyzer
+from solitaire_solver.card_analyzer.model.action_model import Action_model
 from solitaire_solver.card_analyzer.model.state_model import State_model
 from solitaire_solver.card_analyzer.controller.solitaire_controller import Solitaire_controller
-import random
-class TestCard_analyzer(TestCase):
 
-    def __init__(self):
+import random
+class TestCard_analyzer(unittest.TestCase):
+
+    def setUp(self):
         
         self.analyzer = CardAnalyzer()
 
@@ -43,51 +44,7 @@ class TestCard_analyzer(TestCase):
         board = [['KH'],['[]','TH','9C','8D'],['[]','[]','TD'],['[]', '[]','4C','3H'],['[]','[]','[]','2H'],['[]','[]','[]','[]','5H'],['[]','[]','[]','[]','[]','[]','JS']]
         analyzer.update_card(board)
         analyzer.get_next_moves()
-
-    def testGame(self):
-        values = ['A', '2', '3', '4', '5', '6',
-                '7', '8', '9', 'T', 'J', 'Q', 'K']
-        types = ['H','C','S','D']
-        cards = []
-
-        
-        
-        victories = 0
-        number = 0
-
-        while victories != 10:
-            iswon = False
-            while iswon == False:
-                number +=1
-
-                print(number)
-                cards = []
-                for value in values:
-                    for type in types:
-                        cards.append(value+type)
-
-                board = [[], ['[]'], ['[]', '[]'], ['[]', '[]', '[]'], ['[]', '[]', '[]', '[]'], ['[]', '[]', '[]', '[]', '[]'], ['[]', '[]', '[]', '[]', '[]', '[]']]
-                for row in board:
-                    index = random.randint(0, len(cards)-1)
-                    row.append(cards[index])
-                    cards.pop(index)
-                analyzer = CardAnalyzer()
-                analyzer.update_card(board)
-
-                output = analyzer.get_next_moves()
-
-                while output != False and not analyzer.game.is_goal(analyzer.state):
-
-                    index = random.randint(0, len(cards)-1)
-                    analyzer.update_card([cards[index]])
-                    cards.pop(index)
-                    output = analyzer.get_next_moves()
-                iswon = output
-            victories +=1
-            print('won ' + str(victories) + ' times')
-            
-        print('won ' + str(victories) + ' times out of ' + str(number) )
-        
+ 
     def testOneGame(self):
         
         values = ['A', '2', '3', '4', '5', '6',
@@ -106,7 +63,10 @@ class TestCard_analyzer(TestCase):
        
         self.analyzer.update_card(board)
         output = self.analyzer.get_next_moves()
-        while output != False and not self.analyzer.game.is_goal(self.analyzer.state):
+        while output != False:
+            if self.analyzer.game.is_goal(self.analyzer.state):
+                break
+
             index = random.randint(0, len(cards)-1)
             self.analyzer.update_card([cards[index]])
             cards.pop(index)
@@ -115,8 +75,6 @@ class TestCard_analyzer(TestCase):
         if iswon == False:
             return False
         return True
-    
-
 
     def testEquals(self):
         game = Solitaire_controller()
@@ -130,3 +88,15 @@ class TestCard_analyzer(TestCase):
         self.assertTrue(state.equals(state2))
         state2 = game.Result(state2,game.Actions(state2)[0])
         self.assertFalse(state.equals(state2))
+
+
+
+
+            
+
+
+
+
+
+if __name__ == '__main__':
+    unittest.main()

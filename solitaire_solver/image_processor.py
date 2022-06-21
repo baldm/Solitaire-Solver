@@ -23,6 +23,10 @@ def process_and_analyze_image(image):
     # main analyzing things go here
     next_move = card_analyzer.get_next_moves()
 
+    # If the game cannot be won. Return empty states with game over
+    if not next_move:
+        next_move = {'move_from': '', 'move_card': '', 'move_to': '', 'get_talon': False, 'game_over': True}
+
     # Add regconized card to the output
     # Used to display card in frontend
     if len(card_info) == 1:
