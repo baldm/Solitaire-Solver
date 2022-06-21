@@ -80,10 +80,11 @@ class CardAnalyzer:
 
             for i in range(0, len(card_to)):
                 output.append(
-                    {'move_from': move_from[i], 'move_card': card_move[i], 'move_to': card_to[i], 'get_talon': get_talon[i]})
+                    {'move_from': move_from[i], 'move_card': card_move[i], 'move_to': card_to[i], 'reg_card': '', 'get_talon': get_talon[i], 'game_over': False}
+                )
             return output
         else:
-            return False
+            return {'move_from': '', 'move_card': '', 'move_to': '', 'reg_card': '', 'get_talon': False, 'game_over': True}
 
         # make list of moves and return them
 
