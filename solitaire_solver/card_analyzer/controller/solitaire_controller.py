@@ -253,15 +253,7 @@ class Solitaire_controller():
             return val
         return val * length
 
-    def empty_stock_before_row(self, state : State_model, multiplier):
-        length = len(state.stock) + len(state.talon)
-        if length > 0:
-            val = 0
-            for row in state.board:
-                if len(row) == 0:
-                    val += length * multiplier
-            return -val
-        return 0
+    
 
 
     def same_symbols(self, board, weight):
