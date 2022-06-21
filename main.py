@@ -48,7 +48,7 @@ async def upload_board_image(item: Image):
 
     if not endpoint_output:
         endpoint_output = [
-            {'move_from': 'FEJL', 'move_card': "No cards found", 'move_to': 'FEJL', 'get_talon': False}]
+            {'move_from': 'FEJL', 'move_card': "No cards found", 'move_to': 'FEJL', 'get_talon': False, 'reg_card': ''}]
 
     # Removing temp file
     remove(save_path)
