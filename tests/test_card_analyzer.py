@@ -6,20 +6,28 @@ from solitaire_solver.card_analyzer.model.state_model import State_model
 from solitaire_solver.card_analyzer.controller.solitaire_controller import Solitaire_controller
 import random
 class TestCard_analyzer(TestCase):
+
+    def __init__(self):
+        
+        self.analyzer = CardAnalyzer()
+
+    def set_seed(self, seed):
+        random.seed(seed)
+
     def test(self):
-        analyzer = CardAnalyzer()
+        
         board = [['2S'], ['[]', 'QC'], ['[]', '[]', '4S'], ['[]', '[]', '[]', 'QH'], ['[]', '[]', '[]', '[]', '2S'], ['[]', '[]', '[]', '[]', '[]', '4H'], ['[]', '[]', '[]', '[]', '[]', '[]', '4S']]
-        analyzer.update_card(board)
-        analyzer.get_next_moves()
-        analyzer.update_card(['9S'])
+        self.analyzer.update_card(board)
+        self.analyzer.get_next_moves()
+        self.analyzer.update_card(['9S'])
 
 
         board = [['2S'], ['[]', 'QC'], ['[]', '[]', '4S'], ['[]', '[]', '[]', 'QH'], ['[]', '[]', '[]', '[]', '2D'], ['[]', '[]', '[]', '[]', '[]', '4H'], ['[]', '[]', '[]', '[]', '[]', '[]', '4D']]
-        analyzer.update_card(board)
-        analyzer.get_next_moves()
-        analyzer.update_card(['TC'])
-        analyzer.get_next_moves()
-        analyzer.update_card(['9C'])
+        self.analyzer.update_card(board)
+        self.analyzer.get_next_moves()
+        self.analyzer.update_card(['TC'])
+        self.analyzer.get_next_moves()
+        self.analyzer.update_card(['9C'])
 
     def bugfix(self):
         analyzer = CardAnalyzer()
@@ -81,6 +89,7 @@ class TestCard_analyzer(TestCase):
         print('won ' + str(victories) + ' times out of ' + str(number) )
         
     def testOneGame(self):
+        
         values = ['A', '2', '3', '4', '5', '6',
                 '7', '8', '9', 'T', 'J', 'Q', 'K']
         types = ['H','C','S','D']
@@ -94,18 +103,21 @@ class TestCard_analyzer(TestCase):
             index = random.randint(0, len(cards)-1)
             row.append(cards[index])
             cards.pop(index)
-        analyzer = CardAnalyzer()
-        analyzer.update_card(board)
-        output = analyzer.get_next_moves()
-        while output != False and not analyzer.game.is_goal(analyzer.state):
+       
+        self.analyzer.update_card(board)
+        output = self.analyzer.get_next_moves()
+        while output != False and not self.analyzer.game.is_goal(self.analyzer.state):
             index = random.randint(0, len(cards)-1)
-            analyzer.update_card([cards[index]])
+            self.analyzer.update_card([cards[index]])
             cards.pop(index)
-            output = analyzer.get_next_moves()
+            output = self.analyzer.get_next_moves()
         iswon = output
         if iswon == False:
             return False
         return True
+    
+
+
     def testEquals(self):
         game = Solitaire_controller()
         stock = ['[]'] * 24

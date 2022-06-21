@@ -9,15 +9,25 @@ class Solitaire_controller():
                 '7', '8', '9', 'T', 'J', 'Q', 'K']
         self.order = dict(zip(keys, values))
 
-        self.val_even_board = 5
+        self.val_even_board = 10
+        
         self.val_same_symbols = 10
-        self.val_even_foundations = 200
-        self.val_get_talon = 250
-        self.val_unkown_cards_in_row = 0
-        self.val_almost_even_foundation = 5
-        self.val_move_to_foundation = 0
+
+        self.val_even_foundations = 100
+
+        self.val_get_talon = 0
+
+        self.val_unkown_cards_in_row = 70
+
+        self.val_almost_even_foundation = 0
+
+        self.val_move_to_foundation = 10
+
         self.val_move_from_talon = 0
-        self.val_move_from_board = 0
+
+        self.val_move_from_board = 20
+
+        self.val_cards_in_stock = 40
 
     def Actions(self, state: State_model):
         # returns list of actions which is possible in given state
@@ -204,12 +214,15 @@ class Solitaire_controller():
         val += self.same_symbols(state.board, self.val_same_symbols) # if weight = 1, max 37
         val += self.even_piles(state.foundations, self.val_almost_even_foundation)
         val += self.even_foundations(state.foundations, self.val_even_foundations)
+        val += self.cards_in_stock(state,self.val_cards_in_stock)
         
         
 
         return val
                   
-
+    def cards_in_stock(self,state : State_model,val):
+        val = 0
+        return -val*(len(state.stock)+len(state.talon))
     def even_piles(self, lists, max_pts):
         val = 0
         board_row_mean_length = 0
