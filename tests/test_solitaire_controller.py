@@ -78,17 +78,17 @@ class TestSolitaire_controller(TestCase):
     def test_actions(self):
         game = solitaire_controller.Solitaire_controller()
         board = [[],['2H', '3C'],['KH'],[],[],[],[]]
-        stock = ['[]','[]','[]']
+        stock = ['[]','[]','[]','[]']
         foundations = [[],[],[],[]]
         talon = []
         state = state_model.State_model(board,foundations,stock,talon)
-
         self.assertTrue(len(game.Actions(state)) == 6)
         stock = ['[]','[]']
         state.stock = stock
 
         self.assertTrue(len(game.Actions(state)) == 5)
-        
+
+        state.stock = ['[]','[]','[]']
         talon = ['KS']
         state.talon = talon
         self.assertTrue(len(game.Actions(state)) == 11)
@@ -98,6 +98,12 @@ class TestSolitaire_controller(TestCase):
         state.board = [['5H'], ['[]', 'TC'], ['[]', '[]', '6D'], ['[]', '[]', '[]', '6C'], ['[]', '[]', '[]', '[]', '7C'], ['[]', '[]', '[]', '[]', '[]', '2D'], ['[]', '[]', '[]', '[]', '[]', '[]', 'JH']]
 
         self.assertTrue(len(game.Actions(state)) == 8)
+
+        state.stock = []
+        state.talon = []
+        state.board = [['2C'],[],[],[],[],[],[]]
+        state.foundations = [[],[],[],['AC']]
+        self.assertTrue(len(game.Actions(state))==1)
         
 
 
