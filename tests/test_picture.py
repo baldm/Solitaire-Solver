@@ -54,6 +54,11 @@ class Testcard_recognizer(TestCase):
         self.assertEqual( card_recognize.recognize_cards("images/test_images/rudedronning.jpg")[0],"QD")
         self.assertEqual( card_recognize.recognize_cards("images/test_images/rudekonge.jpg")[0],"KD")
         self.assertEqual( card_recognize.recognize_cards("images/test_images/rudees.jpeg")[0],"AD")
+    
+    def test_full_picture(self):
+        ##TODO FIX THIS TEST
+        #answer = [['2S'], ['[]', '3C'], ['[]', '[]', 'TC'], ['[]', '[]', '[]', '8D'], ['[]', '[]', '[]', '[]', 'TH']]
+        #self.assertEqual(card_recognize.recognize_cards("images/test_images/cards.jpg"),answer)
         
         
         
