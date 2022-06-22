@@ -4,11 +4,12 @@ from unittest import TestCase
 from solitaire_solver.card_recognizer import card_recognizer
 
 
-card_recognize = card_recognizer()
+
 
 
 class Testcard_recognizer(TestCase):
     def test_individual_pictures(self):
+        card_recognize = card_recognizer()
         self.assertEqual(card_recognize.recognize_cards(
             "images/test_images/hjerte2.jpg")[0][0], "2H")
         self.assertEqual(card_recognize.recognize_cards(
@@ -106,6 +107,7 @@ class Testcard_recognizer(TestCase):
 
     def test_full_picture(self):
         # TODO FIX THIS TEST
-        #answer = [['2S'], ['[]', '3C'], ['[]', '[]', 'TC'], ['[]', '[]', '[]', '8D'], ['[]', '[]', '[]', '[]', 'TH']]
-        # self.assertEqual(card_recognize.recognize_cards("images/test_images/cards.jpg"),answer)
+        card_recognize = card_recognizer()
+        answer = [['2S'], ['[]', 'QD'], ['[]', '[]', '3D'], ['[]', '[]', '[]', '3C'], ['[]', '[]', '[]', '[]', '9C'],['[]', '[]', '[]', '[]', '[]','8D'],['[]', '[]', '[]', '[]', '[]','[]','TH']]
+        self.assertEqual(card_recognize.recognize_cards("images/test_images/cards.jpg"),answer)
         pass
