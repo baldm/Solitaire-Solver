@@ -40,18 +40,27 @@ class card_recognizer:
         self.saved_cards_array = []
         self.i = 0
 
-     # inspired by https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+     # inspired by https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L106
     @staticmethod
     def detect_card(frame):
+        
+        BKG_THRESH = 60
+        
         # convert the frame to grayscale
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # blur the frame to remove noise
+        # blur the frame to remove noise (changed from gaussianBlur to stop more blur at some points)
         blur = cv2.blur(gray, (3, 3))
         # apply edge detection to the frame
-        edge = cv2.Canny(blur, 75, 200)
+        img_w, img_h = np.shape(frame)[:2]
+        bkg_level = gray[int(img_h/100)][int(img_w/2)]
+        thresh_level = bkg_level + BKG_THRESH
+
+        retval, thresh = cv2.threshold(blur,thresh_level,255,cv2.THRESH_BINARY)
+        
+        
         # find the contours in the edge detection result
         contours, _ = cv2.findContours(
-            edge, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         # sort the contours by area and get the largest contour which will be the card
         contours = sorted(contours, key=cv2.contourArea, reverse=True)
         # initialize the card contour
@@ -64,7 +73,6 @@ class card_recognizer:
             # if our approximated contour has four points, then we can assume that we have found our card
             if len(approx) == 4 and cv2.contourArea(c) > 100:
                 card_contour.append(approx)
-        cv2.drawContours(frame, card_contour, -1, (0, 255, 0), 2)
         # return the card contour
         return card_contour
 
@@ -109,9 +117,8 @@ class card_recognizer:
 
         return result
 
-    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L197
     # noting modified from the original code
-
     @staticmethod
     def flattener(image, pts, w, h):
         """Flattens an image of a card into a top-down 200x300 perspective.
@@ -184,7 +191,7 @@ class card_recognizer:
 
     # used to crip all the cards in the frame and return them to the user
 
-     # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+     # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L171
     @staticmethod
     def crop_image(_frame, contour):
 
@@ -229,7 +236,7 @@ class card_recognizer:
             Qcorner_zoom = cv2.resize(Qcorner, (0, 0), fx=4, fy=4)
 
             # Adaptive threshold levels
-            BKG_THRESH = 60
+
             CARD_THRESH = 30
 
             white_level = Qcorner_zoom[15, int((CORNER_WIDTH*4)/2)]
@@ -281,7 +288,6 @@ class card_recognizer:
         return tempcard
 
     #not used
-
     @staticmethod
     def card_type(frame):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -302,7 +308,7 @@ class card_recognizer:
 
         return card2_contour
 
-    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L240
     @staticmethod
     def match_card(qCard, train_ranks, train_suits):
         """Finds best rank and suit matches for the query card. Differences
@@ -361,7 +367,7 @@ class card_recognizer:
         # Return the identiy of the card and the quality of the suit and rank match
         return best_rank_match_name, best_suit_match_name, best_rank_match_diff, best_suit_match_diff
 
-    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L65
     class Train_suits:
         """Structure to store information about train suit images."""
 
@@ -399,7 +405,7 @@ class card_recognizer:
 
         return train_ranks
 
-    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L58
+    # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L90
     @staticmethod
     def load_suits(filepath):
         """Loads suit images from directory specified by filepath. Stores

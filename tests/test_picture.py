@@ -8,7 +8,7 @@ card_recognize = card_recognizer()
 
 
 class Testcard_recognizer(TestCase):
-    def test(self):
+    def test_individual_pictures(self):
         self.assertEqual(card_recognize.recognize_cards(
             "images/test_images/hjerte2.jpg")[0][0], "2H")
         self.assertEqual(card_recognize.recognize_cards(
