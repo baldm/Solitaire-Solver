@@ -233,7 +233,7 @@ class BFS():
                 if state.action.card_index != 0 and state.board[state.action.from_row][-1] == '[]':
                     return False
 
-        #Find the length of the largest foundation           
+        #Find the length of the largest foundation as well as the shortest        
         for index,foundation in enumerate(state.foundations):
             for foundation in state.foundations:
                 if len(foundation) > length:

@@ -41,13 +41,17 @@ class Solitaire_controller():
             card = state.talon[0]
             for to_row in range(0, len(board) + len(foundations)):
                 action = Action_model(card_index, -1, to_row)
+                #Check if move is legal
                 if self.is_move_legal(action, state):
+                    #Add to list
                     actions.append(action)
 
         # If it is possible to draw from stock
         if self.draw_from_stock(state.stock, state.talon):
             action = Action_model()
             action.get_talon = True
+            # If there are 3 cards in talon and stock combined, and there is at least 
+            # one card in stock, the game must get talon
             if len(state.stock) > 0 and len(state.stock) + len(state.talon) == 3:
                 return [action]
             
@@ -61,7 +65,9 @@ class Solitaire_controller():
                 for to_row in range(0, len(board) + len(foundations)):
                     if to_row != row_index:
                         action = Action_model(card_index, row_index, to_row)
+                        #Check if the action is legal
                         if self.is_move_legal(action, state):
+                            #Add to list
                             actions.append(action)
         return actions
 
@@ -71,40 +77,55 @@ class Solitaire_controller():
         temp_foundations = state.foundations.copy()
         temp_talon = state.talon.copy()
         temp_stock = state.stock.copy()
-
+        # If action was to get talon
         if action.get_talon:
+            #If stock contains 3 or more cards
             if len(temp_stock) >= 3:
                 temp_talon = temp_stock[-3:] + temp_talon
                 temp_stock = temp_stock[:-3]
                 # If we need to shuffle talon into stock
             else:
+                #Put talon back in the stock
                 temp_stock = temp_talon + temp_stock
                 temp_talon = []
 
+            #Create new state
             new_state = State_model(temp_board, temp_foundations, temp_stock, temp_talon)
             new_state.action = action
             new_state.prev_state = state
+            #Return neew state
             return new_state
 
+        #Here we define the card 
         if action.from_row == -1:
+            #If the card was taken from talon
             cards = [state.talon[0]]
+            #We remove the card from talon
             temp_talon.pop(0)
         else:
+            #Make a list containing all cards from the moved card, to the end of the row
             cards = temp_board[action.from_row][action.card_index: None]
+            #If it was on index 0
             if action.card_index == 0:
+                #Remove all cards from row
                 temp_board[action.from_row] = []
             else:
+                #Remove moved cards from row
                 temp_board[action.from_row] = temp_board[action.from_row][:(action.card_index)]
 
+        #Add card(s) to new row
         if action.to_row < len(temp_board):
-           
+           #If it was to a row in the board
             temp_board[action.to_row] = state.board[action.to_row] + cards
         else:
+            #If it was a to Foundation
             temp_foundations[action.to_row % len(temp_board)] = state.foundations[action.to_row % len(temp_board)] + cards
-
+        
+        #Create new state
         new_state = State_model(temp_board, temp_foundations, temp_stock, temp_talon)
         new_state.action = action
         new_state.prev_state = state
+        #Retorn new state
         return new_state
 
     def is_move_legal(self, action: Action_model, state: State_model):
@@ -163,7 +184,7 @@ class Solitaire_controller():
             return True
         return False
 
-        # If there are less than 3 cards in talon and stock combined the game is locked and unsolvable
+    # If there are less than 3 cards in talon and stock combined, return false
     def draw_from_stock(self, stock: list, talon: list):
         if (len(talon) + len(stock) < 3):
             return False
