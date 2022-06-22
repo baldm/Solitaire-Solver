@@ -78,6 +78,7 @@ class card_recognizer:
 
     # SOURCE:
     # https: // stackoverflow.com/questions/64295209/removing-background-around-contour
+    #not in use anymore
     @staticmethod
     def remove_background(frame, contour):
         hh, ww = frame.shape[:2]
