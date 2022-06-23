@@ -41,13 +41,17 @@ class Solitaire_controller():
             card = state.talon[0]
             for to_row in range(0, len(board) + len(foundations)):
                 action = Action_model(card_index, -1, to_row)
+                #Check if move is legal
                 if self.is_move_legal(action, state):
+                    #Add to list
                     actions.append(action)
 
         # If it is possible to draw from stock
         if self.draw_from_stock(state.stock, state.talon):
             action = Action_model()
             action.get_talon = True
+            # If there are 3 cards in talon and stock combined, and there is at least 
+            # one card in stock, the game must get talon
             if len(state.stock) > 0 and len(state.stock) + len(state.talon) == 3:
                 return [action]
             
@@ -61,7 +65,9 @@ class Solitaire_controller():
                 for to_row in range(0, len(board) + len(foundations)):
                     if to_row != row_index:
                         action = Action_model(card_index, row_index, to_row)
+                        #Check if the action is legal
                         if self.is_move_legal(action, state):
+                            #Add to list
                             actions.append(action)
         return actions
 
@@ -71,40 +77,55 @@ class Solitaire_controller():
         temp_foundations = state.foundations.copy()
         temp_talon = state.talon.copy()
         temp_stock = state.stock.copy()
-
+        # If action was to get talon
         if action.get_talon:
+            #If stock contains 3 or more cards
             if len(temp_stock) >= 3:
                 temp_talon = temp_stock[-3:] + temp_talon
                 temp_stock = temp_stock[:-3]
                 # If we need to shuffle talon into stock
             else:
+                #Put talon back in the stock
                 temp_stock = temp_talon + temp_stock
                 temp_talon = []
 
+            #Create new state
             new_state = State_model(temp_board, temp_foundations, temp_stock, temp_talon)
             new_state.action = action
             new_state.prev_state = state
+            #Return neew state
             return new_state
 
+        #Here we define the card 
         if action.from_row == -1:
+            #If the card was taken from talon
             cards = [state.talon[0]]
+            #We remove the card from talon
             temp_talon.pop(0)
         else:
+            #Make a list containing all cards from the moved card, to the end of the row
             cards = temp_board[action.from_row][action.card_index: None]
+            #If it was on index 0
             if action.card_index == 0:
+                #Remove all cards from row
                 temp_board[action.from_row] = []
             else:
+                #Remove moved cards from row
                 temp_board[action.from_row] = temp_board[action.from_row][:(action.card_index)]
 
+        #Add card(s) to new row
         if action.to_row < len(temp_board):
-           
+           #If it was to a row in the board
             temp_board[action.to_row] = state.board[action.to_row] + cards
         else:
+            #If it was a to Foundation
             temp_foundations[action.to_row % len(temp_board)] = state.foundations[action.to_row % len(temp_board)] + cards
-
+        
+        #Create new state
         new_state = State_model(temp_board, temp_foundations, temp_stock, temp_talon)
         new_state.action = action
         new_state.prev_state = state
+        #Retorn new state
         return new_state
 
     def is_move_legal(self, action: Action_model, state: State_model):
@@ -163,7 +184,7 @@ class Solitaire_controller():
             return True
         return False
 
-        # If there are less than 3 cards in talon and stock combined the game is locked and unsolvable
+    # If there are less than 3 cards in talon and stock combined, return false
     def draw_from_stock(self, stock: list, talon: list):
         if (len(talon) + len(stock) < 3):
             return False
@@ -192,28 +213,35 @@ class Solitaire_controller():
         
 
         action : Action_model = state.action
-
+        #If last action was to draw from stock
         if action.get_talon:
             return self.val_get_talon
         else:
             
-
+            #If the last action was to move a card form the Tableau
             if action.from_row != -1:
                 val += self.val_move_from_board
+                #Add val for each unkown card in row
                 for card in state.board[action.from_row]:
                     if card == '[]':
                         val += self.val_unkown_cards_in_row
             else:
+                #Add val for getting new card in talon
                 val += self.val_move_from_talon
 
+            #If the card the last action moved a card to foundation
             if action.to_row >= len(state.board):
                 val -= self.val_move_to_foundation
         
-
+        #Checks if all piles on Tableau is approximately even
         val += self.even_piles(state.board, self.val_even_board) 
+        #Checks if same symbols occur in the rows
         val += self.same_symbols(state.board, self.val_same_symbols) 
+        #Checks if foundation is approximately even
         val += self.even_piles(state.foundations, self.val_almost_even_foundation)
+        #Checks if the foundations is even og 1 less than the largest foundation
         val += self.even_foundations(state.foundations, self.val_even_foundations)
+        #Checks how many cards is left in the stock+talon
         val += self.cards_in_stock(state,self.val_cards_in_stock)
         
         
@@ -222,15 +250,16 @@ class Solitaire_controller():
                   
     def cards_in_stock(self,state : State_model,val):
         val = 0
+        #Retorn negative value for each card in the stock + talon
         return -val*(len(state.stock)+len(state.talon))
     def even_piles(self, lists, max_pts):
         val = 0
         board_row_mean_length = 0
-        
+        #Determines mean length of rows
         for row in lists:
             board_row_mean_length += len(row)
         board_row_mean_length /= len(lists)
-
+        # Gives points based on how far away from mean length each row is
         for row in lists:
             val += (max_pts - abs(len(row) - int(board_row_mean_length)))
         
@@ -241,13 +270,16 @@ class Solitaire_controller():
     def even_foundations(self, foundations, pts):
         val = pts
         length = 0
+        #Finds the length of the largest foundation
         for foundation in foundations:
             if len(foundation) > length:
                 length = len(foundation)
         if length == 0:
             return 0
+        #Checks if each foundation is either equally as long as the largest, or 1 shorter than the largest
         for foundation in foundations:
             if len(foundation) != length and len(foundation) != length-1:
+                #Remove points based on how much shorther the foundation is
                 val -= (int(pts/4)+ abs(len(foundation)- length)*3)
         if val != pts:
             return val
@@ -258,13 +290,15 @@ class Solitaire_controller():
 
     def same_symbols(self, board, weight):
         val = 0
-
+        #Checks if faceup cards have same symbols
         for row in board:
             for index, card in enumerate(row):
                 if card == '[]':
                     continue
                 elif index > 1:
+                    #If the card has same symbol as the card 2 spaces before
                     if card[1] == row[index-2][1]:
+                        #Add weight as value
                         val += weight
 
         return val

@@ -13,8 +13,11 @@ class CardAnalyzer:
         self.agent = Agent(self.game, self.strategy)
         self.state = None
 
+    #Give the AI a new card or board
     def update_card(self, card):
+        #If its a card
         if len(card) == 1:
+            #Insert where last card was moved from
             if self.state.action.get_talon or self.state.action.from_row == -1 :
                 self.state.talon[0] = card[0]
             else:
@@ -22,6 +25,8 @@ class CardAnalyzer:
                 
             self.state.prev_state = self.state
         else:
+            #It's a new board
+            #A new game is created
             stock = ['[]'] * 24
             talon = []
             foundations = [[], [], [], []]
@@ -42,7 +47,7 @@ class CardAnalyzer:
             card_to = []
             move_from = []
             get_talon = []
-
+            #Get all actions executed, to reach current state
             while temp_state != temp_state.prev_state:
                 action: Action_model = temp_state.action
 
@@ -67,22 +72,19 @@ class CardAnalyzer:
                     move_from.append(str(action.from_row))
                 temp_state = temp_state.prev_state
 
+            #Reverse all lists, since we get the moves in reversed order
             card_to.reverse()
             card_move.reverse()
             move_from.reverse()
             get_talon.reverse()
-
+            #Make a list with dictionaries, containing all moves
             for i in range(0, len(card_to)):
                 output.append(
                     {'move_from': move_from[i], 'move_card': card_move[i], 'move_to': card_to[i], 'reg_card': '', 'get_talon': get_talon[i], 'game_over': False}
                 )
             return output
         else:
+            #The game can't be won
             return False
 
-        # make list of moves and return them
-
-       # [
-       #     {'move_from': '3', 'move_card': '4H', 'move_to': '-1'},
-       #     {'move_from': '4', 'move_card': '3S', 'move_to': '8'}
-       # ]
+        
