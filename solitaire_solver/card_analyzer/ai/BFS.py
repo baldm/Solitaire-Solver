@@ -233,7 +233,7 @@ class BFS():
                 if state.action.card_index != 0 and state.board[state.action.from_row][-1] == '[]':
                     return False
 
-        #Find the length of the largest foundation           
+        #Find the length of the largest foundation as well as the shortest        
         for index,foundation in enumerate(state.foundations):
             for foundation in state.foundations:
                 if len(foundation) > length:
@@ -263,6 +263,7 @@ class BFS():
         return False
 
     def talon_exist(self, new_state : State_model):
+        #Checks if the combination of talon and stock already exists
         for pair in self.talons:
             if pair[0] == new_state.talon and pair[1] == new_state.stock:
                 return True
@@ -270,15 +271,16 @@ class BFS():
 
              
     def no_unkowns(self,state:State_model):
+        #Check for unkown cards in board
         for row in state.board:
             for card in row:
                 if card == '[]':
                     return False
-        
+        #Check for unkown cards in stock
         for card in state.stock:
             if card == '[]':
                     return False
-        
+        #Check for unkown cards in talon
         for card in state.talon:
              if card == '[]':
                     return False
