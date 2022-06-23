@@ -6,7 +6,7 @@ import numpy as np
 
 # detect the card that is in the frame and returns the card to the user
 
-# inspired by https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L45
+# inspired by https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py
 
 
 class card:
@@ -470,6 +470,7 @@ class card_recognizer:
                 i += 1
             output = self.saved_cards_array
         else:
+            #source https://www.tutorialkart.com/opencv/python/opencv-python-resize-image/
             scale_percent = 50  # percent of original size
             width = int(__frame.shape[1] * scale_percent / 100)
             height = int(__frame.shape[0] * scale_percent / 100)
