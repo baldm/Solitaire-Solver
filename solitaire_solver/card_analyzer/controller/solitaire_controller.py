@@ -213,28 +213,35 @@ class Solitaire_controller():
         
 
         action : Action_model = state.action
-
+        #If last action was to draw from stock
         if action.get_talon:
             return self.val_get_talon
         else:
             
-
+            #If the last action was to move a card form the Tableau
             if action.from_row != -1:
                 val += self.val_move_from_board
+                #Add val for each unkown card in row
                 for card in state.board[action.from_row]:
                     if card == '[]':
                         val += self.val_unkown_cards_in_row
             else:
+                #Add val for getting new card in talon
                 val += self.val_move_from_talon
 
+            #If the card the last action moved a card to foundation
             if action.to_row >= len(state.board):
                 val -= self.val_move_to_foundation
         
-
+        #Checks if all piles on Tableau is approximately even
         val += self.even_piles(state.board, self.val_even_board) 
+        #Checks if same symbols occur in the rows
         val += self.same_symbols(state.board, self.val_same_symbols) 
+        #Checks if foundation is approximately even
         val += self.even_piles(state.foundations, self.val_almost_even_foundation)
+        #Checks if the foundations is even og 1 less than the largest foundation
         val += self.even_foundations(state.foundations, self.val_even_foundations)
+        #Checks how many cards is left in the stock+talon
         val += self.cards_in_stock(state,self.val_cards_in_stock)
         
         
@@ -243,15 +250,16 @@ class Solitaire_controller():
                   
     def cards_in_stock(self,state : State_model,val):
         val = 0
+        #Retorn negative value for each card in the stock + talon
         return -val*(len(state.stock)+len(state.talon))
     def even_piles(self, lists, max_pts):
         val = 0
         board_row_mean_length = 0
-        
+        #Determines mean length of rows
         for row in lists:
             board_row_mean_length += len(row)
         board_row_mean_length /= len(lists)
-
+        # Gives points based on how far away from mean length each row is
         for row in lists:
             val += (max_pts - abs(len(row) - int(board_row_mean_length)))
         
@@ -262,13 +270,16 @@ class Solitaire_controller():
     def even_foundations(self, foundations, pts):
         val = pts
         length = 0
+        #Finds the length of the largest foundation
         for foundation in foundations:
             if len(foundation) > length:
                 length = len(foundation)
         if length == 0:
             return 0
+        #Checks if each foundation is either equally as long as the largest, or 1 shorter than the largest
         for foundation in foundations:
             if len(foundation) != length and len(foundation) != length-1:
+                #Remove points based on how much shorther the foundation is
                 val -= (int(pts/4)+ abs(len(foundation)- length)*3)
         if val != pts:
             return val
@@ -279,13 +290,15 @@ class Solitaire_controller():
 
     def same_symbols(self, board, weight):
         val = 0
-
+        #Checks if faceup cards have same symbols
         for row in board:
             for index, card in enumerate(row):
                 if card == '[]':
                     continue
                 elif index > 1:
+                    #If the card has same symbol as the card 2 spaces before
                     if card[1] == row[index-2][1]:
+                        #Add weight as value
                         val += weight
 
         return val
