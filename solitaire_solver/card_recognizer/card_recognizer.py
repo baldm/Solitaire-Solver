@@ -41,6 +41,7 @@ class card_recognizer:
         self.i = 0
 
      # inspired by https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L106
+     #finds all squares in the image 
     @staticmethod
     def detect_card(frame):
         
@@ -76,47 +77,6 @@ class card_recognizer:
         # return the card contour
         return card_contour
 
-    # SOURCE:
-    # https: // stackoverflow.com/questions/64295209/removing-background-around-contour
-    #not in use anymore
-    @staticmethod
-    def remove_background(frame, contour):
-        hh, ww = frame.shape[:2]
-
-        # draw white contour on black background as mask
-        mask = np.zeros((hh, ww), dtype=np.uint8)
-        cv2.drawContours(mask, [contour], -1, (255, 255, 255), cv2.FILLED)
-
-        # invert mask so shapes are white on black background
-        mask_inv = 255 - mask
-
-        # create new (blue) background
-        bckgnd = np.full_like(frame, (0, 255, 0))
-
-        # apply mask to image
-        image_masked = cv2.bitwise_and(frame, frame, mask=mask)
-
-        # apply inverse mask to background
-        bckgnd_masked = cv2.bitwise_and(bckgnd, bckgnd, mask=mask_inv)
-
-        # add together
-        result = cv2.add(image_masked, bckgnd_masked)
-
-        # save results
-    #    cv2.imwrite('shapes_inverted_mask.jpg', mask_inv)
-    #    cv2.imwrite('shapes_masked.jpg', image_masked)
-    #    cv2.imwrite('shapes_bckgrnd_masked.jpg', bckgnd_masked)
-
-        # SOURCE:
-        # https://stackoverflow.com/a/28759496
-
-        # Now crop
-        (y, x) = np.where(mask == 255)
-        (topy, topx) = (np.min(y), np.min(x))
-        (bottomy, bottomx) = (np.max(y), np.max(x))
-        result = result[topy:bottomy+1, topx:bottomx+1]
-
-        return result
 
     # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L197
     # noting modified from the original code
@@ -288,26 +248,6 @@ class card_recognizer:
 
         return tempcard
 
-    #not used
-    @staticmethod
-    def card_type(frame):
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        blur = cv2.blur(gray, (3, 3))
-        edge = cv2.Canny(blur, 75, 200)
-        contours, _ = cv2.findContours(
-            edge, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        # sort the contours by area and get the largest contour which will be the card
-        contours = sorted(contours, key=cv2.contourArea, reverse=True)
-        card2_contour = []
-        for c in contours:
-            # approximate the contour
-            peri = cv2.arcLength(c, True)
-            approx = cv2.approxPolyDP(c, 0.02 * peri, True)
-            # if our approximated contour has four points, then we can assume that we have found our card
-            if len(approx) == 4:
-                card2_contour.append(approx)
-
-        return card2_contour
 
     # sorce https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/blob/1f8365779f88f7f46634114bf2e35427bc1c00d0/Cards.py#L240
     @staticmethod
@@ -427,13 +367,16 @@ class card_recognizer:
 
         return train_suits
 
+    #matches cards to the correct card
     @staticmethod
     def detect_cards(frame):
         king_cards_path = 'images/master_images/'
 
         cards = []
         for i, contour in enumerate(card_recognizer.detect_card(frame)):
+            #crops card intor format
             temp = card_recognizer.crop_image(frame, contour)
+            #matches card to the correct card
             temp.best_rank_match, temp.best_suit_match, temp.rank_diff, temp.suit_diff = card_recognizer.match_card(
                 temp, card_recognizer.load_ranks(king_cards_path), card_recognizer.load_suits(king_cards_path))
             if temp.best_rank_match != "Unknown" and temp.best_suit_match != "Unknown":
